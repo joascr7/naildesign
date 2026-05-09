@@ -43,6 +43,7 @@ export default function BookingModal({
   const [horariosBloqueados, setHorariosBloqueados] = useState([]);
 
   const [diaBloqueado, setDiaBloqueado] = useState(false);
+  const [whatsappLoja, setWhatsappLoja] = useState("");
 
   const [configAgenda, setConfigAgenda] = useState({
     agendaAberta: true,
@@ -86,30 +87,51 @@ export default function BookingModal({
   }
 
   async function carregarConfigAgenda() {
-    const ref = doc(
-      db,
-      "configAgenda",
-      "principal"
-    );
 
-    const snap = await getDoc(ref);
+  const ref = doc(
+    db,
+    "configAgenda",
+    "principal"
+  );
 
-    if (snap.exists()) {
-      const dados = snap.data();
+  const snap = await getDoc(ref);
 
-      setConfigAgenda({
-        agendaAberta:
-          dados.agendaAberta === true,
+  if (snap.exists()) {
 
-        dataInicioAgendamento:
-          dados.dataInicioAgendamento || "",
+    const dados = snap.data();
 
-        mensagemFechado:
-          dados.mensagemFechado ||
-          "Agenda indisponível no momento."
-      });
-    }
+    setConfigAgenda({
+      agendaAberta:
+        dados.agendaAberta === true,
+
+      dataInicioAgendamento:
+        dados.dataInicioAgendamento || "",
+
+      mensagemFechado:
+        dados.mensagemFechado ||
+        "Agenda indisponível no momento."
+    });
   }
+
+  const siteRef = doc(
+    db,
+    "siteConfig",
+    "principal"
+  );
+
+  const siteSnap = await getDoc(siteRef);
+
+  if (siteSnap.exists()) {
+
+    const siteDados = siteSnap.data();
+
+    setWhatsappLoja(
+      String(
+        siteDados.whatsapp || ""
+      ).replace(/\D/g, "")
+    );
+  }
+}
 
   async function buscarHorariosOcupados(
     dataSelecionada
@@ -316,17 +338,25 @@ export default function BookingModal({
       );
 
       const texto = encodeURIComponent(
-  `Olá, meu nome é ${nome}. Gostaria de confirmar meu agendamento:
+  `Novo agendamento pelo site 💅
+
+Cliente: ${nome}
+WhatsApp: ${telefone}
 
 Serviço: ${servicoEscolhido.nome}
 Data: ${data}
 Horário: ${horario}
-Valor: R$ ${precoFinal().toFixed(2)}`
+
+Valor: R$ ${precoFinal().toFixed(2)}
+
+Para confirmação do agendamento é necessário o pagamento antecipado de 40% do valor do procedimento.`
 );
 
-const numeroLimpo = telefone.replace(/\D/g, "");
+const numeroLoja =
+  whatsappLoja || "81973258842";
 
-window.location.href = `https://wa.me/55${numeroLimpo}?text=${texto}`;
+window.location.href =
+  `https://wa.me/55${numeroLoja}?text=${texto}`;
 
 setTimeout(() => {
   onFechar();
