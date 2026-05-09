@@ -461,20 +461,28 @@ export default function BookingModal({
           }
         />
 
-        <input
-          type="date"
-          min={
-            configAgenda.dataInicioAgendamento ||
-            dataHoje()
-          }
-          value={data}
-          onChange={(e) =>
-            buscarHorariosOcupados(
-              e.target.value
-            )
-          }
-        />
+      <div className="dateField">
 
+  <label className="modalFieldLabel">
+    Escolha a data do atendimento
+  </label>
+
+  <input
+    className="dateInput"
+    type="date"
+    min={
+      configAgenda.dataInicioAgendamento ||
+      dataHoje()
+    }
+    value={data}
+    onChange={(e) =>
+      buscarHorariosOcupados(
+        e.target.value
+      )
+    }
+  />
+
+</div>
         <div className="horariosGrid">
           {horarios.map((h) => {
             const ocupado =
