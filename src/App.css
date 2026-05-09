@@ -1195,3 +1195,87 @@ html {
   font-size: 18px;
   font-weight: 900;
 }
+
+.modalBox input[type="date"] {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+
+  appearance: none;
+  -webkit-appearance: none;
+
+  overflow: hidden;
+
+  font-size: 16px;
+
+  background: #fff;
+}
+
+.modalBox input[type="date"]::before {
+  content: "Escolha a data";
+  color: #999;
+  margin-right: 10px;
+}
+
+.modalBox input[type="date"]:valid::before {
+  content: "";
+}
+
+@media (max-width: 768px) {
+  .modalOverlay {
+    align-items: flex-start;
+    padding: 90px 14px 24px;
+    overflow-y: auto;
+  }
+
+  .modalBox {
+    max-width: 100%;
+    padding: 26px 22px;
+    border-radius: 28px;
+  }
+
+  .modalBox h2 {
+    font-size: 38px;
+  }
+
+  .modalBox input,
+  .modalSelect {
+    height: 56px;
+    font-size: 16px;
+    border-radius: 18px;
+  }
+
+  .modalBox input[type="date"] {
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+    display: block;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  .horariosGrid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .horariosGrid button {
+    min-width: 0;
+    padding: 0;
+    height: 58px;
+    font-size: 14px;
+  }
+
+  .confirmBtn {
+    height: 58px;
+    font-size: 14px;
+  }
+}
+
+.modalFieldLabel {
+  display: block;
+  margin: 4px 0 10px;
+  color: #b85b68;
+  font-size: 13px;
+  font-weight: 900;
+}
