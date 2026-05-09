@@ -1496,3 +1496,71 @@ html {
     transform: translateX(100%);
   }
 }
+
+.adminMenu {
+  position: sticky;
+  top: 12px;
+  z-index: 80;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  overflow-x: auto;
+
+  padding: 12px;
+
+  margin-bottom: 26px;
+
+  background: rgba(255,255,255,.92);
+  backdrop-filter: blur(14px);
+
+  border: 1px solid #eee;
+  border-radius: 22px;
+
+  box-shadow:
+    0 10px 30px rgba(0,0,0,.04),
+    0 4px 12px rgba(184,91,104,.05);
+}
+
+.adminMenu::-webkit-scrollbar {
+  display: none;
+}
+
+.adminMenu a {
+  white-space: nowrap;
+
+  background: #fff7f6;
+  color: #b85b68;
+
+  padding: 11px 16px;
+
+  border-radius: 999px;
+
+  font-size: 13px;
+  font-weight: 900;
+
+  text-decoration: none;
+
+  transition: .2s;
+}
+
+.adminMenu a:hover {
+  background: #b85b68;
+  color: white;
+}
+
+@media (max-width: 768px) {
+
+  .adminMenu {
+    margin-left: -4px;
+    margin-right: -4px;
+    border-radius: 18px;
+  }
+
+  .adminMenu a {
+    font-size: 12px;
+    padding: 10px 14px;
+  }
+
+}

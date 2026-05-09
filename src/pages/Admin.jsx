@@ -500,28 +500,84 @@ Assim conseguimos reservar seu horário exclusivamente para você. `
   );
 
   return (
-    <div className="adminPage adminPremium">
-      <div className="adminTopBar">
-        <div>
-          <span className="adminEyebrow">NailDesign</span>
-          <h1>Painel Admin</h1>
-          <p>Controle serviços, agenda, galeria, contato e faturamento.</p>
-        </div>
+   <div className="adminPage adminPremium">
 
-        <div className="adminTopActions">
-          <div className={configAgenda.agendaAberta ? "storeOpen" : "storeClosed"}>
-            {configAgenda.agendaAberta ? "Agenda aberta" : "Agenda fechada"}
-          </div>
+  <div className="adminTopBar">
 
-          <button
-            type="button"
-            className="logoutBtn"
-            onClick={sairAdmin}
-          >
-            Sair
-          </button>
-        </div>
+    <div>
+      <span className="adminEyebrow">
+        NailDesign
+      </span>
+
+      <h1>
+        Painel Admin
+      </h1>
+
+      <p>
+        Controle serviços, agenda,
+        galeria, contato e faturamento.
+      </p>
+    </div>
+
+    <div className="adminTopActions">
+
+      <div
+        className={
+          configAgenda.agendaAberta
+            ? "storeOpen"
+            : "storeClosed"
+        }
+      >
+        {configAgenda.agendaAberta
+          ? "Agenda aberta"
+          : "Agenda fechada"}
       </div>
+
+      <button
+        type="button"
+        className="logoutBtn"
+        onClick={sairAdmin}
+      >
+        Sair
+      </button>
+
+    </div>
+
+  </div>
+
+  <div className="adminMenu">
+
+    
+
+    <a href="#site">
+      Site
+    </a>
+
+    <a href="#galeriaAdmin">
+      Galeria
+    </a>
+
+    <a href="#agenda">
+      Agenda
+    </a>
+
+    <a href="#abertos">
+      Abertos
+    </a>
+
+    <a href="#concluidos">
+      Concluídos
+    </a>
+
+    <a href="#cancelados">
+      Cancelados
+    </a>
+
+    <a href="#servicosAdmin">
+      Serviços
+    </a>
+
+  </div>
 
       {mensagem && (
         <div className="adminMessage">
@@ -564,7 +620,9 @@ Assim conseguimos reservar seu horário exclusivamente para você. `
         </div>
       </div>
 
-      <h2 className="adminTitle">Configurações do site</h2>
+      <h2 id="site" className="adminTitle">
+  Configurações do site
+</h2>
 
       <div className="agendaControlGrid">
         <div className="agendaControlCard">
@@ -655,7 +713,9 @@ Assim conseguimos reservar seu horário exclusivamente para você. `
         </div>
       </div>
 
-      <h2 className="adminTitle">Galeria / Prova social</h2>
+      <h2 id="galeriaAdmin" className="adminTitle">
+  Galeria / Prova social
+</h2>
 
       <div className="servicesAdminGrid">
         <div className="serviceAdminCard premiumForm">
@@ -763,7 +823,9 @@ Assim conseguimos reservar seu horário exclusivamente para você. `
         ))}
       </div>
 
-      <h2 className="adminTitle">Controle de Agenda</h2>
+      <h2 id="agenda" className="adminTitle">
+  Controle de Agenda
+</h2>
 
       <div className="agendaControlGrid">
         <div className="agendaControlCard">
@@ -906,7 +968,9 @@ Assim conseguimos reservar seu horário exclusivamente para você. `
         ))}
       </div>
 
-      <h2 className="adminTitle">Agendamentos em aberto</h2>
+      <h2 id="abertos" className="adminTitle">
+  Agendamentos em aberto
+</h2>
 
       <div className="adminGrid">
         {abertos.map((item) => (
@@ -952,7 +1016,7 @@ Assim conseguimos reservar seu horário exclusivamente para você. `
         ))}
       </div>
 
-      <h2 className="adminSectionTitle">
+      <h2 id="concluidos" className="adminTitle">
   Agendamentos finalizados
 </h2>
 
@@ -983,7 +1047,7 @@ Assim conseguimos reservar seu horário exclusivamente para você. `
   ))}
 </div>
 
-<h2 className="adminSectionTitle">
+<h2 id="cancelados" className="adminTitle">
   Agendamentos cancelados
 </h2>
 
@@ -1023,7 +1087,9 @@ Assim conseguimos reservar seu horário exclusivamente para você. `
   ))}
 </div>
 
-      <h2 className="adminTitle">Criar novo serviço</h2>
+      <h2 id="servicosAdmin" className="adminTitle">
+  Criar novo serviço
+</h2>
 
       <div className="servicesAdminGrid">
         <div className="serviceAdminCard premiumForm">
