@@ -1426,3 +1426,73 @@ html {
   color: #777;
   font-size: 13px;
 }
+
+.confirmArea {
+  margin-top: 18px;
+}
+
+.confirmInfo {
+  background: linear-gradient(
+    135deg,
+    #fff7f8,
+    #fff
+  );
+
+  border: 1px solid #f3d1d7;
+
+  color: #b85b68;
+
+  padding: 14px 16px;
+
+  border-radius: 18px;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  line-height: 1.5;
+
+  margin-bottom: 14px;
+
+  text-align: center;
+}
+
+.modalMessage.success {
+  background: #ecfff3;
+  border: 1px solid #b7f0cb;
+  color: #18a957;
+}
+
+.modalMessage.error {
+  background: #fff5f5;
+  border: 1px solid #ffd2d2;
+  color: #ff4d4f;
+}
+
+.pulseBtn {
+  position: relative;
+  overflow: hidden;
+}
+
+.pulseBtn::after {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255,255,255,.35),
+    transparent
+  );
+
+  transform: translateX(-100%);
+
+  animation: shine 2.2s infinite;
+}
+
+@keyframes shine {
+  100% {
+    transform: translateX(100%);
+  }
+}

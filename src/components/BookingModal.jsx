@@ -315,20 +315,22 @@ export default function BookingModal({
         "Agendamento realizado com sucesso!"
       );
 
-      const texto =
-        encodeURIComponent(
-          `Olá, meu nome é ${nome}. Gostaria de confirmar meu agendamento:\n\nServiço: ${servicoEscolhido.nome}\nData: ${data}\nHorário: ${horario}\nValor: R$ ${precoFinal().toFixed(2)}`
-        );
+      const texto = encodeURIComponent(
+  `Olá, meu nome é ${nome}. Gostaria de confirmar meu agendamento:
 
-      setTimeout(() => {
-        window.open(
-          `https://wa.me/55${telefone}?text=${texto}`,
-          "_blank"
-        );
+Serviço: ${servicoEscolhido.nome}
+Data: ${data}
+Horário: ${horario}
+Valor: R$ ${precoFinal().toFixed(2)}`
+);
 
-        onFechar();
-      }, 800);
-    } catch (error) {
+const numeroLimpo = telefone.replace(/\D/g, "");
+
+window.location.href = `https://wa.me/55${numeroLimpo}?text=${texto}`;
+
+setTimeout(() => {
+  onFechar();
+}, 500);
       console.error(error);
 
       setMensagem(
@@ -530,25 +532,39 @@ export default function BookingModal({
         </div>
 
         {mensagem && (
-          <div className="modalMessage">
-            {mensagem}
-          </div>
-        )}
+  <div
+    className={
+      mensagem.includes("sucesso")
+        ? "modalMessage success"
+        : "modalMessage error"
+    }
+  >
+    {mensagem}
+  </div>
+)}
 
-        <button
-          className="confirmBtn"
-          onClick={
-            confirmarAgendamento
-          }
-          disabled={
-            loading ||
-            !configAgenda.agendaAberta
-          }
-        >
-          {loading
-            ? "Agendando..."
-            : "Confirmar agendamento"}
-        </button>
+<div className="confirmArea">
+
+  <div className="confirmInfo">
+    Ao confirmar, você será redirecionada
+    para o WhatsApp para finalizar o
+    agendamento 💖
+  </div>
+
+  <button
+    className="confirmBtn pulseBtn"
+    onClick={confirmarAgendamento}
+    disabled={
+      loading ||
+      !configAgenda.agendaAberta
+    }
+  >
+    {loading
+      ? "Agendando..."
+      : "Confirmar agendamento"}
+  </button>
+
+</div>
 
       </div>
     </div>
