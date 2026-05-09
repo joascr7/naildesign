@@ -31,7 +31,7 @@ export default function Hero({ onAgendar, config = {} }) {
         <img
           src={
             config.heroImagem ||
-            "https://images.unsplash.com/photo-1604654894610-df63bc536371?q=80&w=1200"
+            "https://i.imgur.com/D0cSwm2.png"
           }
           alt="Unhas em gel"
         />
