@@ -1,0 +1,1103 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #fff7f6;
+  color: #3a1f22;
+}
+
+.app {
+  min-height: 100vh;
+}
+
+.header {
+  width: 100%;
+  height: 86px;
+  padding: 0 60px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header h2 {
+  margin: 0;
+  color: #b85b68;
+  font-size: 30px;
+}
+
+.header span {
+  font-size: 12px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+.header nav {
+  display: flex;
+  gap: 34px;
+}
+
+.header nav a {
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+button {
+  border: none;
+  background: #b85b68;
+  color: white;
+  border-radius: 12px;
+  padding: 14px 22px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  min-height: 540px;
+  align-items: center;
+  padding: 50px 70px;
+  gap: 40px;
+}
+
+.heroText h1 {
+  font-size: 58px;
+  line-height: 1.05;
+  margin: 0 0 24px;
+}
+
+.heroText p {
+  max-width: 420px;
+  font-size: 18px;
+  line-height: 1.6;
+  margin-bottom: 30px;
+}
+
+
+
+@media (max-width: 768px) {
+  .header {
+    height: 74px;
+    padding: 0 20px;
+  }
+
+  .header nav,
+  .header > button {
+    display: none;
+  }
+
+  .header h2 {
+    font-size: 25px;
+  }
+
+  .hero {
+    grid-template-columns: 1fr;
+    padding: 26px 18px;
+    gap: 24px;
+  }
+
+  .heroText h1 {
+    font-size: 38px;
+  }
+
+  .heroText p {
+    font-size: 15px;
+  }
+
+.heroImage {
+  order: -1;
+
+  width: 82%;
+  min-height: 260px;
+  max-height: 340px;
+
+  margin: 0 auto;
+
+  border-radius: 24px;
+  overflow: hidden;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.heroImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 24px;
+}
+}
+
+.services {
+  padding: 80px 70px;
+}
+
+.servicesTop {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.servicesTop span {
+  color: #b85b68;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+.servicesTop h2 {
+  font-size: 46px;
+  margin-top: 14px;
+  line-height: 1.1;
+}
+
+.servicesGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 26px;
+}
+
+.serviceCard {
+  background: white;
+  border-radius: 28px;
+  overflow: hidden;
+  position: relative;
+  padding-bottom: 26px;
+  box-shadow: 0 10px 40px rgba(0,0,0,.06);
+}
+
+.serviceCard img {
+  width: 100%;
+  height: 260px;
+  object-fit: cover;
+}
+
+.serviceCard h3 {
+  padding: 0 24px;
+  margin-top: 24px;
+  font-size: 28px;
+}
+
+.serviceCard p {
+  padding: 0 24px;
+  color: #666;
+  line-height: 1.6;
+}
+
+.prices {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 24px;
+  margin-top: 18px;
+  margin-bottom: 22px;
+}
+
+.oldPrice {
+  text-decoration: line-through;
+  color: #999;
+}
+
+.prices strong {
+  color: #b85b68;
+  font-size: 28px;
+}
+
+.serviceCard button {
+  margin-left: 24px;
+}
+
+.promoTag {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  background: #ff4d6d;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+@media (max-width: 768px) {
+
+  .services {
+    padding: 60px 18px;
+  }
+
+  .servicesTop h2 {
+    font-size: 34px;
+  }
+
+  .servicesGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .serviceCard img {
+    height: 220px;
+  }
+
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  padding: 18px;
+}
+
+.modalBox {
+  width: 100%;
+  max-width: 460px;
+  background: white;
+  border-radius: 28px;
+  padding: 28px;
+  position: relative;
+  box-shadow: 0 30px 90px rgba(0,0,0,.25);
+}
+
+.closeModal {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 50%;
+  font-size: 24px;
+}
+
+.modalBox h2 {
+  margin: 0;
+  font-size: 30px;
+}
+
+.modalService {
+  color: #b85b68;
+  font-weight: 800;
+  margin-bottom: 20px;
+}
+
+.modalBox input {
+  width: 100%;
+  height: 48px;
+  border: 1px solid #eee;
+  border-radius: 14px;
+  padding: 0 14px;
+  margin-bottom: 12px;
+  font-size: 15px;
+}
+
+.horariosGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 12px 0 18px;
+}
+
+.horariosGrid button {
+  background: #fff7f6;
+  color: #b85b68;
+  border: 1px solid #f0c6cc;
+}
+
+.confirmBtn {
+  width: 100%;
+  height: 52px;
+}
+
+.horariosGrid button.selecionado {
+  background: #b85b68;
+  color: white;
+  border-color: #b85b68;
+}
+
+.horariosGrid button.indisponivel {
+  background: #eee;
+  color: #999;
+  border-color: #ddd;
+  cursor: not-allowed;
+}
+
+.horariosGrid button.selecionado {
+  background: #b85b68;
+  color: white;
+  border-color: #b85b68;
+}
+
+.modalMessage {
+  background: #fff7f6;
+  color: #b85b68;
+  border: 1px solid #f0c6cc;
+  padding: 12px 14px;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+
+.adminPage {
+  min-height: 100vh;
+  padding: 40px;
+  background: #fff7f6;
+}
+
+.adminPage h1 {
+  margin-top: 0;
+  color: #3a1f22;
+}
+
+.adminGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.adminCard {
+  background: white;
+  border-radius: 22px;
+  padding: 20px;
+  box-shadow: 0 10px 35px rgba(0,0,0,.06);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.adminCard strong {
+  font-size: 20px;
+  color: #b85b68;
+}
+
+.adminCard span {
+  color: #555;
+}
+
+.adminCard p {
+  margin: 0;
+  color: #444;
+}
+
+.adminCard b {
+  margin-top: 8px;
+  font-size: 22px;
+  color: #3a1f22;
+}
+
+@media (max-width: 768px) {
+  .adminPage {
+    padding: 22px;
+  }
+
+  .adminGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 240px);
+  gap: 18px;
+  margin-bottom: 28px;
+}
+
+.statCard {
+  background: white;
+  border-radius: 22px;
+  padding: 24px;
+  box-shadow: 0 10px 35px rgba(0,0,0,.06);
+}
+
+.statCard span {
+  display: block;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.statCard strong {
+  font-size: 34px;
+  color: #b85b68;
+}
+
+.status {
+  width: fit-content;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+}
+
+.status.agendado {
+  background: #fff0d8;
+  color: #d88a00;
+}
+
+.status.concluido {
+  background: #ddffe7;
+  color: #00a63e;
+}
+
+.status.cancelado {
+  background: #ffe1e1;
+  color: #d10000;
+}
+
+.adminActions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.successBtn {
+  background: #12b76a;
+}
+
+.cancelBtn {
+  background: #ff4d4f;
+}
+
+@media (max-width: 768px) {
+
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+.adminTitle {
+  margin: 38px 0 18px;
+  color: #3a1f22;
+}
+
+.servicesAdminGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.serviceAdminCard {
+  background: white;
+  border-radius: 24px;
+  padding: 22px;
+  box-shadow: 0 10px 35px rgba(0,0,0,.06);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.serviceAdminCard img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 18px;
+  background: #fff7f6;
+}
+
+.serviceAdminCard input,
+.serviceAdminCard textarea {
+  width: 100%;
+  border: 1px solid #eee;
+  border-radius: 14px;
+  padding: 13px 14px;
+  font-size: 14px;
+  outline: none;
+}
+
+.serviceAdminCard textarea {
+  min-height: 90px;
+  resize: vertical;
+  font-family: Arial, sans-serif;
+}
+
+.checkLine {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #3a1f22;
+}
+
+.checkLine input {
+  width: auto;
+}
+
+.serviceAdminCard button {
+  margin-top: 8px;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .servicesAdminGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .serviceAdminCard img {
+    height: 190px;
+  }
+}
+
+.adminMessage {
+  background: #fff;
+  color: #b85b68;
+  border: 1px solid #f0c6cc;
+  padding: 14px 18px;
+  border-radius: 16px;
+  font-weight: 800;
+  margin-bottom: 20px;
+  width: fit-content;
+}
+
+.imagePreview {
+  width: 100%;
+  height: 220px;
+  background: #fff7f6;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid #eee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-weight: 800;
+}
+
+.imagePreview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.uploadBox {
+  background: #fff7f6;
+  color: #b85b68;
+  border: 1px dashed #b85b68;
+  border-radius: 16px;
+  padding: 14px;
+  text-align: center;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.uploadBox input {
+  display: none;
+}
+
+.modalSelect {
+  width: 100%;
+  height: 48px;
+  border: 1px solid #eee;
+  border-radius: 14px;
+  padding: 0 14px;
+  margin-bottom: 12px;
+  font-size: 15px;
+  background: white;
+  outline: none;
+}
+
+.adminPremium {
+  background: #f7f7f8;
+  color: #1f1f1f;
+}
+
+.adminTopBar {
+  background: linear-gradient(135deg, #1f1f1f, #3a1f22);
+  color: white;
+  border-radius: 30px;
+  padding: 30px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.adminTopBar h1 {
+  margin: 6px 0;
+  color: white;
+  font-size: 38px;
+}
+
+.adminTopBar p {
+  margin: 0;
+  color: rgba(255,255,255,.72);
+}
+
+.adminEyebrow {
+  color: #ffd7df;
+  font-weight: 900;
+  letter-spacing: 2px;
+  font-size: 12px;
+}
+
+.storeOpen,
+.storeClosed {
+  padding: 12px 18px;
+  border-radius: 999px;
+  font-weight: 900;
+}
+
+.storeOpen {
+  background: #dcffe9;
+  color: #087a35;
+}
+
+.storeClosed {
+  background: #ffe1e1;
+  color: #c40000;
+}
+
+.premiumStats {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.statMoney strong {
+  color: #111;
+}
+
+.agendaControlGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.agendaControlCard {
+  background: white;
+  border-radius: 26px;
+  padding: 24px;
+  box-shadow: 0 10px 35px rgba(0,0,0,.06);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.agendaControlCard h3 {
+  margin: 0 0 8px;
+}
+
+.agendaControlCard input,
+.agendaControlCard textarea,
+.premiumForm input,
+.premiumForm textarea {
+  width: 100%;
+  border: 1px solid #ececec;
+  border-radius: 16px;
+  padding: 14px;
+  font-size: 14px;
+  outline: none;
+  background: #fafafa;
+}
+
+.agendaControlCard textarea,
+.premiumForm textarea {
+  min-height: 90px;
+  resize: vertical;
+  font-family: Arial, sans-serif;
+}
+
+.formLabel {
+  font-size: 13px;
+  font-weight: 900;
+  color: #555;
+  margin-top: 4px;
+}
+
+.switchLine {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 14px;
+  background: #fafafa;
+  border-radius: 18px;
+  border: 1px solid #eee;
+}
+
+.switchLine input {
+  width: 22px;
+  height: 22px;
+}
+
+.switchLine strong {
+  display: block;
+  color: #222;
+}
+
+.switchLine span {
+  display: block;
+  color: #777;
+  font-size: 13px;
+  margin-top: 3px;
+}
+
+.bloqueiosList {
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.bloqueioItem {
+  background: white;
+  border-radius: 20px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: center;
+  box-shadow: 0 8px 25px rgba(0,0,0,.05);
+}
+
+.bloqueioItem strong {
+  display: block;
+  color: #b85b68;
+  margin-bottom: 4px;
+}
+
+.bloqueioItem span {
+  color: #666;
+  font-size: 13px;
+}
+
+.bloqueioItem button {
+  background: #ff4d4f;
+  padding: 10px 14px;
+}
+
+.orderCard {
+  border: 1px solid #eee;
+}
+
+.serviceAdminCard {
+  border: 1px solid #eee;
+}
+
+@media (max-width: 768px) {
+  .adminTopBar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    border-radius: 24px;
+    padding: 24px;
+  }
+
+  .adminTopBar h1 {
+    font-size: 30px;
+  }
+
+  .premiumStats {
+    grid-template-columns: 1fr;
+  }
+
+  .agendaControlGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .bloqueioItem {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+
+html {
+  scroll-behavior: smooth;
+}
+
+.heroBadge {
+  display: inline-flex;
+  background: #fff;
+  color: #b85b68;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 900;
+  margin-bottom: 18px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.06);
+}
+
+.heroButtons {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.heroSecondaryBtn {
+  height: 52px;
+  padding: 0 22px;
+  border-radius: 14px;
+  background: white;
+  color: #b85b68;
+  font-weight: 800;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,.06);
+}
+
+.heroImage {
+  width: 100%;
+  max-width: 620px;
+  height: 520px;
+
+  margin-left: auto;
+  margin-right: auto;
+
+  background: #fff;
+  border-radius: 34px;
+  overflow: hidden;
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 14px;
+
+  box-shadow:
+    0 24px 70px rgba(184, 91, 104, 0.12),
+    0 10px 30px rgba(0,0,0,.05);
+}
+
+.heroImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 24px;
+  background: #fff7f6;
+}
+
+.heroFloatingCard {
+  position: absolute;
+  left: 28px;
+  bottom: 28px;
+
+  background: rgba(255,255,255,.96);
+  backdrop-filter: blur(12px);
+
+  border-radius: 18px;
+  padding: 14px 16px;
+
+  box-shadow: 0 14px 34px rgba(0,0,0,.12);
+
+  max-width: 220px;
+}
+
+.heroFloatingCard strong {
+  font-size: 15px;
+}
+
+.heroFloatingCard span {
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+
+@media (max-width: 768px) {
+  .heroImage {
+    width: 100%;
+    max-width: 100%;
+    height: 320px;
+    min-height: 0;
+    max-height: none;
+    padding: 10px;
+    border-radius: 26px;
+    margin: 0;
+  }
+
+  .heroImage img {
+    border-radius: 20px;
+    object-fit: cover;
+  }
+
+  .heroFloatingCard {
+    display: none;
+  }
+}
+
+
+.servicesDescription {
+  max-width: 620px;
+  margin: 18px auto 0;
+  color: #777;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.services {
+  position: relative;
+}
+
+.services::before {
+  content: "";
+  position: absolute;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 420px;
+  height: 420px;
+  background: rgba(184, 91, 104, 0.08);
+  filter: blur(90px);
+  border-radius: 50%;
+  z-index: 0;
+}
+
+.servicesTop,
+.servicesGrid {
+  position: relative;
+  z-index: 2;
+}
+
+.gallerySection {
+  padding: 80px 70px;
+  background: #fff;
+}
+
+.galleryGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+
+.galleryCard {
+  background: #fff7f6;
+  border-radius: 26px;
+  overflow: hidden;
+  box-shadow: 0 10px 35px rgba(0,0,0,.06);
+}
+
+.galleryCard img {
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+}
+
+.galleryCard div {
+  padding: 18px;
+}
+
+.galleryCard strong {
+  display: block;
+  color: #3a1f22;
+  font-size: 18px;
+  margin-bottom: 6px;
+}
+
+.galleryCard span {
+  color: #666;
+  font-size: 14px;
+}
+
+.contactSection {
+  padding: 80px 70px;
+  background: #fff7f6;
+}
+
+.contactBox {
+  background: #b85b68;
+  color: white;
+  border-radius: 34px;
+  padding: 42px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  align-items: center;
+}
+
+.contactBox span {
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+
+.contactBox h2 {
+  font-size: 42px;
+  margin: 12px 0;
+}
+
+.contactBox p {
+  line-height: 1.6;
+}
+
+.contactInfo {
+  background: white;
+  color: #3a1f22;
+  border-radius: 24px;
+  padding: 24px;
+}
+
+.contactInfo a {
+  display: inline-flex;
+  background: #b85b68;
+  color: white;
+  text-decoration: none;
+  padding: 14px 18px;
+  border-radius: 14px;
+  font-weight: 900;
+  margin-top: 12px;
+}
+
+@media (max-width: 768px) {
+  .gallerySection,
+  .contactSection {
+    padding: 60px 18px;
+  }
+
+  .galleryGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .galleryCard img {
+    height: 240px;
+  }
+
+  .contactBox {
+    grid-template-columns: 1fr;
+    padding: 28px;
+  }
+
+  .contactBox h2 {
+    font-size: 32px;
+  }
+}
+
+.adminTopActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logoutBtn {
+  background: rgba(255,255,255,.14);
+  color: white;
+  border: 1px solid rgba(255,255,255,.28);
+  border-radius: 999px;
+  padding: 12px 18px;
+  font-weight: 900;
+}
+
+.logoutBtn:hover {
+  background: rgba(255,255,255,.22);
+}
+
+.dangerFullBtn {
+  background: #ff4d4f !important;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .adminTopActions {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
