@@ -519,22 +519,62 @@ button {
   font-family: Arial, sans-serif;
 }
 
+.whatsappBtn {
+  background: #25d366 !important;
+  color: white;
+}
+
+.adminActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.adminActions button {
+  flex: 1;
+  min-width: 130px;
+}
+
 .checkLine {
+  width: 100%;
+  max-width: 100%;
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 14px;
-  font-weight: 700;
-  color: #3a1f22;
+  flex-wrap: nowrap;
+  overflow: hidden;
 }
 
-.checkLine input {
-  width: auto;
+.checkLine input[type="checkbox"] {
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px;
+  flex-shrink: 0;
 }
 
 .serviceAdminCard button {
   margin-top: 8px;
   width: 100%;
+}
+
+.serviceAdminCard,
+.agendaControlCard {
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .adminActions {
+    flex-direction: column;
+  }
+
+  .adminActions button {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .checkLine {
+    font-size: 14px;
+  }
 }
 
 @media (max-width: 768px) {
@@ -1310,4 +1350,79 @@ html {
 
   appearance: none;
   -webkit-appearance: none;
+}
+
+.cancelled {
+  opacity: .82;
+  border: 1px solid #ffd2d2;
+}
+
+.statusBadge.cancel {
+  background: #ffe7e7;
+  color: #ff4d4f;
+}
+
+.deleteBtn {
+  width: 100%;
+  margin-top: 14px;
+
+  background: #ff4d4f;
+  color: white;
+
+  height: 46px;
+  border-radius: 14px;
+
+  font-weight: 900;
+}
+
+.deleteBtn:hover {
+  opacity: .92;
+}
+
+.successCard {
+  background:
+    linear-gradient(
+      135deg,
+      #ffffff,
+      #f8fff9
+    );
+
+  border: 1px solid #dcf5e3;
+}
+
+.statTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.statIcon {
+  width: 42px;
+  height: 42px;
+
+  border-radius: 14px;
+
+  background: #18c964;
+  color: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 20px;
+  font-weight: 900;
+
+  box-shadow: 0 10px 20px rgba(24,201,100,.25);
+}
+
+.successCard strong {
+  color: #18c964;
+}
+
+.successCard small {
+  display: block;
+  margin-top: 8px;
+  color: #777;
+  font-size: 13px;
 }

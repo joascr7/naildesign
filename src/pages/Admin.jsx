@@ -94,6 +94,34 @@ export default function Admin() {
     );
   }
 
+  async function excluirAgendamento(id) {
+  const confirmar = window.confirm(
+    "Deseja excluir este agendamento?"
+  );
+
+  if (!confirmar) return;
+
+  try {
+    await deleteDoc(
+      doc(db, "agendamentos", id)
+    );
+
+    setMensagem(
+      "Agendamento removido com sucesso."
+    );
+
+    await carregarAgendamentos();
+
+  } catch (error) {
+
+    console.log(error);
+
+    setMensagem(
+      "Erro ao excluir agendamento."
+    );
+  }
+}
+
   async function carregarServicos() {
     const snap = await getDocs(collection(db, "servicos"));
 
@@ -434,6 +462,27 @@ export default function Admin() {
     }
   }
 
+
+  function chamarClienteWhatsApp(item) {
+  const telefone = String(item.clienteTelefone || "").replace(/\D/g, "");
+
+  const texto = encodeURIComponent(
+  `Olá ${item.clienteNome}, tudo bem? 
+
+Aqui é da NailDesign sobre seu agendamento.
+
+ Serviço: ${item.servicoNome}
+ Data: ${item.data}
+ Horário: ${item.horario}
+
+Para confirmação do agendamento é necessário o pagamento antecipado de 40% do valor do procedimento.
+
+Assim conseguimos reservar seu horário exclusivamente para você. `
+);
+
+  window.open(`https://wa.me/55${telefone}?text=${texto}`, "_blank");
+}
+
   useEffect(() => {
     carregarTudo();
   }, []);
@@ -486,10 +535,23 @@ export default function Admin() {
           <strong>{abertos.length}</strong>
         </div>
 
-        <div className="statCard">
-          <span>Concluídos</span>
-          <strong>{concluidos.length}</strong>
-        </div>
+        <div className="statCard successCard">
+  <div className="statTop">
+    <span>Concluídos</span>
+
+    <div className="statIcon">
+      ✓
+    </div>
+  </div>
+
+  <strong>
+    {concluidos.length}
+  </strong>
+
+  <small>
+    Serviços finalizados
+  </small>
+</div>
 
         <div className="statCard">
           <span>Cancelados</span>
@@ -877,30 +939,89 @@ export default function Admin() {
               >
                 Cancelar
               </button>
+
+              <button
+              type="button"
+              className="whatsappBtn"
+              onClick={() => chamarClienteWhatsApp(item)}
+              >
+              Chamar WhatsApp
+              </button>
             </div>
           </div>
         ))}
       </div>
 
-      <h2 className="adminTitle">Agendamentos finalizados</h2>
+      <h2 className="adminSectionTitle">
+  Agendamentos finalizados
+</h2>
 
-      <div className="adminGrid">
-        {[...concluidos, ...cancelados].map((item) => (
-          <div className="adminCard orderCard" key={item.id}>
-            <div className={`status ${item.status}`}>
-              {item.status}
-            </div>
+<div className="adminGrid">
+  {concluidos.map((item) => (
+    <div
+      className="adminCard finished"
+      key={item.id}
+    >
+      <span className="statusBadge done">
+        CONCLUÍDO
+      </span>
 
-            <strong>{item.clienteNome}</strong>
-            <span>{item.clienteTelefone}</span>
+      <h3>{item.clienteNome}</h3>
 
-            <p>{item.servicoNome}</p>
-            <p>{item.data} às {item.horario}</p>
+      <p>{item.clienteTelefone}</p>
 
-            <b>R$ {Number(item.valor).toFixed(2)}</b>
-          </div>
-        ))}
-      </div>
+      <p>{item.servicoNome}</p>
+
+      <p>
+        {item.data} às {item.horario}
+      </p>
+
+      <strong>
+        R$ {Number(item.valor || 0).toFixed(2)}
+      </strong>
+    </div>
+  ))}
+</div>
+
+<h2 className="adminSectionTitle">
+  Agendamentos cancelados
+</h2>
+
+<div className="adminGrid">
+  {cancelados.map((item) => (
+    <div
+      className="adminCard cancelled"
+      key={item.id}
+    >
+      <span className="statusBadge cancel">
+        CANCELADO
+      </span>
+
+      <h3>{item.clienteNome}</h3>
+
+      <p>{item.clienteTelefone}</p>
+
+      <p>{item.servicoNome}</p>
+
+      <p>
+        {item.data} às {item.horario}
+      </p>
+
+      <strong>
+  R$ {Number(item.valor || 0).toFixed(2)}
+</strong>
+
+<button
+  className="deleteBtn"
+  onClick={() =>
+    excluirAgendamento(item.id)
+  }
+>
+  Excluir
+</button>
+    </div>
+  ))}
+</div>
 
       <h2 className="adminTitle">Criar novo serviço</h2>
 
