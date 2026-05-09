@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import "../App.css";
+import { signOut } from "firebase/auth";
+import { auth } from "../firebase";
 
 import {
   collection,
@@ -238,9 +240,10 @@ export default function Admin() {
   reader.readAsDataURL(arquivo);
 }
 
-  function sairAdmin() {
-    setMensagem("Logout será ativado na próxima etapa com Firebase Auth.");
-  }
+  async function sairAdmin() {
+  await signOut(auth);
+  window.location.href = "/admin-login";
+}
 
   async function salvarConfigSite() {
     setMensagem("Salvando contato e imagem principal...");

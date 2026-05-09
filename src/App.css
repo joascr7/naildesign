@@ -1101,3 +1101,97 @@ html {
     justify-content: space-between;
   }
 }
+
+.loginPage {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top, rgba(184,91,104,.18), transparent 35%),
+    #fff7f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.loginCard {
+  width: 100%;
+  max-width: 420px;
+  background: white;
+  border-radius: 34px;
+  padding: 34px;
+  box-shadow: 0 30px 90px rgba(184,91,104,.18);
+}
+
+.loginLogo {
+  width: 72px;
+  height: 72px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #ff8fa3, #b85b68);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 42px;
+  font-weight: 900;
+  margin-bottom: 22px;
+}
+
+.loginCard h1 {
+  margin: 0;
+  font-size: 34px;
+  color: #2d1217;
+}
+
+.loginCard p {
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.loginCard form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.loginCard input {
+  width: 100%;
+  height: 54px;
+  border: 1px solid #eee;
+  border-radius: 16px;
+  padding: 0 16px;
+  font-size: 15px;
+  outline: none;
+}
+
+.loginCard input:focus {
+  border-color: #b85b68;
+}
+
+.loginCard button {
+  height: 54px;
+  border-radius: 16px;
+  background: #b85b68;
+  color: white;
+  font-weight: 900;
+}
+
+.loginMessage {
+  background: #fff7f6;
+  border: 1px solid #f0c6cc;
+  color: #b85b68;
+  padding: 12px 14px;
+  border-radius: 14px;
+  font-weight: 800;
+}
+
+.loadingAdmin {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff7f6;
+  color: #b85b68;
+  font-size: 18px;
+  font-weight: 900;
+}
