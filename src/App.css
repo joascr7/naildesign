@@ -1690,3 +1690,49 @@ html {
   color: #211512;
   flex-shrink: 0;
 }
+
+
+/* ==========================================================================
+   TRAVA DEFINITIVA ANTIESTOURO PARA MOBILE
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  /* 1. Força os containers dos cards a recalcularem os paddings internos */
+  .agendaControlCard,
+  .serviceAdminCard,
+  .adminCard,
+  .modalBox {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 16px !important; /* Diminui o recuo interno para dar espaço aos botões */
+    overflow: hidden !important; /* Garante que nada saia do card */
+  }
+
+  /* 2. Remove qualquer chance do Grid forçar uma largura maior que a tela */
+  .servicesAdminGrid,
+  .adminGrid,
+  .agendaControlGrid {
+    grid-template-columns: 1fr !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    gap: 16px !important;
+  }
+
+  /* 3. Aplica a trava em absolutamente todos os inputs e botões dentro do formulário */
+  .agendaControlCard input,
+  .agendaControlCard textarea,
+  .serviceAdminCard input,
+  .serviceAdminCard textarea,
+  .premiumForm input,
+  .premiumForm textarea,
+  .dateInput,
+  .uploadBox {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+}
