@@ -834,6 +834,10 @@ button:hover {
   }
 }
 
+/* ==========================================================================
+   BOTÃO DE UPLOAD (ESCOLHER IMAGEM) - CORREÇÃO PARA MOBILE
+   ========================================================================== */
+
 .uploadBox {
   background: #f5f4f0;
   color: #211512;
@@ -843,11 +847,18 @@ button:hover {
   text-align: center;
   font-weight: 800;
   cursor: pointer;
-  width: 100%; /* Força confinamento dentro do container pai */
+  
+  /* CORREÇÕES CRUCIAIS PARA MOBILE: */
+  display: block;                     /* Força a se comportar como um bloco estruturado */
+  width: 100% !important;             /* Ocupa exatamente a largura do card pai */
+  max-width: 100% !important;         /* Impede que empurre as bordas */
+  box-sizing: border-box !important;  /* Garante que o padding de 14px fique POR DENTRO dos 100% */
+  min-width: 0 !important;            /* Zera qualquer restrição do navegador */
 }
 
+/* Garante que se houver um input invisível dentro dele, não gere espaço fantasma */
 .uploadBox input {
-  display: none;
+  display: none !important;
 }
 
 .modalSelect {
