@@ -365,7 +365,7 @@ const [horarios, setHorarios] = useState([]);
   );
 
   const texto = encodeURIComponent(
-`Novo agendamento pelo site 💅
+`Novo agendamento pelo site 
 
 Cliente: ${nome}
 WhatsApp: ${telefone}
@@ -422,7 +422,7 @@ Para confirmação do agendamento é necessário o pagamento antecipado de 40% d
         </button>
 
         <span className="modalTag">
-          Lais Eduarda
+          Lays Eduarda
         </span>
 
         <h2>
