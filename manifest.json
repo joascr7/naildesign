@@ -1,7 +1,7 @@
 {
   "name": "Lais Eduarda",
   "short_name": "Lais Eduarda",
-  "start_url": "/",
+  "start_url": "/admin",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#ea1d2c",
