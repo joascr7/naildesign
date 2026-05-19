@@ -349,6 +349,11 @@ button:hover {
    MODAL
    ========================================================================== */
 
+/* ==========================================================================
+   DESTRAVAR SCROLL DOS HORÁRIOS E MODAL (MOBILE)
+   ========================================================================== */
+
+/* 1. Garante que o fundo do modal permita rolagem se a tela for pequena */
 .modalOverlay {
   position: fixed;
   inset: 0;
@@ -358,8 +363,10 @@ button:hover {
   justify-content: center;
   z-index: 999;
   padding: 18px;
+  overflow-y: auto; /* ATENÇÃO: Libera a rolagem vertical no fundo se o modal crescer */
 }
 
+/* 2. Garante que a caixa do modal não reprima o conteúdo */
 .modalBox {
   width: 100%;
   max-width: 460px;
@@ -369,6 +376,25 @@ button:hover {
   position: relative;
   box-shadow: 0 30px 90px rgba(33, 21, 18, 0.18);
   border: 1px solid #e0ded7;
+  
+  /* CORREÇÃO AQUI: */
+  max-height: 90vh;        /* Não deixa o modal passar do tamanho da tela */
+  overflow-y: auto;        /* Se o modal ficar gigante no celular, ele rola o texto e os horários livremente */
+  -webkit-overflow-scrolling: touch; /* Deixa o scroll do iPhone liso e natural */
+}
+
+/* 3. Liberação total do Grid de Horários */
+.horariosGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 12px 0 18px;
+  width: 100%;
+  max-width: 100%;
+  
+  /* CORREÇÃO AQUI: */
+  overflow: visible !important; /* Impede o CSS de tentar cortar ou esconder os botões */
+  touch-action: pan-y;         /* Informa ao celular que essa área aceita toque para rolar para cima e para baixo */
 }
 
 .closeModal {
@@ -1146,8 +1172,14 @@ html {
   font-weight: 900;
 }
 
-.dateInput {
-  width: 100%;
+/* ==========================================================================
+   CAMPO DE DATA - CORREÇÃO PARA NÃO VAZAR NO MOBILE
+   ========================================================================== */
+
+.dateInput,
+.modalBox input[type="date"] {
+  width: 100% !important;
+  max-width: 100% !important; /* Força o limite máximo seguro */
   height: 58px;
   border: 1px solid #e0ded7;
   border-radius: 18px;
@@ -1155,6 +1187,18 @@ html {
   background: white;
   color: #211512;
   font-size: 16px;
+  
+  /* CORREÇÕES CRUCIAIS: */
+  box-sizing: border-box !important; /* Faz o padding ser calculado POR DENTRO dos 100% */
+  display: block;
+  min-width: 0 !important;           /* Desativa qualquer tamanho mínimo padrão do navegador */
+}
+
+/* Ajuste específico para garantir que o contêiner que envelopa a data não force largura extra */
+.dateField {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
 }
 
 .cancelled {
