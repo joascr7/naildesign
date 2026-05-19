@@ -376,7 +376,7 @@ Horário: ${horario}
 
 Valor: R$ ${precoFinal().toFixed(2)}
 
-Para confirmação do agendamento é necessário o pagamento antecipado de 40% do valor do procedimento.`
+Já deixei tudo preparado exclusivamente para o seu atendimento. Se precisar de qualquer alteração, é só me avisar por aqui.`
   );
 
   const numeroLoja =
