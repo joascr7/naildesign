@@ -772,14 +772,51 @@ button:hover {
   font-size: 12px;
 }
 
-.storeOpen {
-  background: #dcffe9;
-  color: #087a35;
+.storeOpen,
+.storeClosed {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px; /* Espaço entre a bolinha e o texto */
+  padding: 6px 14px;
+  border-radius: 999px; /* Formato de cápsula perfeito */
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase; /* Deixa o texto limpo e padronizado */
 }
 
+/* Estado: Aberto */
+.storeOpen {
+  background: rgba(8, 122, 53, 0.08); /* Fundo verde ultra suave e transparente */
+  color: #087a35; /* Verde firme para leitura */
+  border: 1px solid rgba(8, 122, 53, 0.15);
+}
+
+/* Bolinha verde de status */
+.storeOpen::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background-color: #087a35;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* Estado: Fechado */
 .storeClosed {
-  background: #ffe1e1;
-  color: #c40000;
+  background: rgba(196, 0, 0, 0.06); /* Fundo vermelho ultra suave */
+  color: #c40000; /* Vermelho corporativo elegante */
+  border: 1px solid rgba(196, 0, 0, 0.12);
+}
+
+/* Bolinha vermelha de status */
+.storeClosed::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background-color: #c40000;
+  border-radius: 50%;
+  display: inline-block;
 }
 
 .premiumStats {
