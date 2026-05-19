@@ -387,7 +387,7 @@ setTimeout(() => {
         </button>
 
         <span className="modalTag">
-          NailDesign
+          Lais Eduarda
         </span>
 
         <h2>

@@ -5,8 +5,8 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background: #fff7f6;
-  color: #3a1f22;
+  background: #f5f4f0; /* Fundo levemente mais nítido e limpo */
+  color: #211512; /* Marrom ultra profundo para leitura perfeita, sem parecer apagado */
 }
 
 .app {
@@ -17,15 +17,16 @@ body {
   width: 100%;
   height: 86px;
   padding: 0 60px;
-  background: #fff;
+  background: #ffffff;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  border-bottom: 1px solid #e0ded7;
 }
 
 .header h2 {
   margin: 0;
-  color: #b85b68;
+  color: #211512;
   font-size: 30px;
 }
 
@@ -33,6 +34,7 @@ body {
   font-size: 12px;
   letter-spacing: 3px;
   text-transform: uppercase;
+  color: #6b5d57;
 }
 
 .header nav {
@@ -44,17 +46,28 @@ body {
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
+  color: #211512;
+  text-decoration: none;
 }
 
 button {
   border: none;
-  background: #b85b68;
+  background: #402e29; /* Tom de marrom mais firme para melhor destaque */
   color: white;
   border-radius: 12px;
   padding: 14px 22px;
   font-weight: 800;
   cursor: pointer;
+  transition: background 0.2s;
 }
+
+button:hover {
+  background: #2b1e1a;
+}
+
+/* ==========================================================================
+   SEÇÃO HERO - CORREÇÃO DA MOLDURA DA IMAGEM
+   ========================================================================== */
 
 .hero {
   display: grid;
@@ -69,6 +82,7 @@ button {
   font-size: 58px;
   line-height: 1.05;
   margin: 0 0 24px;
+  color: #211512;
 }
 
 .heroText p {
@@ -76,9 +90,48 @@ button {
   font-size: 18px;
   line-height: 1.6;
   margin-bottom: 30px;
+  color: #4a3f3a;
 }
 
+.heroImage {
+  width: 100%;
+  max-width: 620px;
+  height: auto; /* Altura flexível para não cortar a foto */
+  min-height: 0;
+  margin-left: auto;
+  margin-right: auto;
+  background: #ffffff;
+  border-radius: 34px;
+  overflow: hidden;
+  position: relative;
+  padding: 0; /* Removido o recuo para alinhar a moldura ao tamanho exato da foto */
+  box-shadow: 0 24px 70px rgba(33, 21, 18, 0.08);
+  border: 1px solid #e0ded7;
+  display: flex;
+}
 
+.heroImage img {
+  width: 100%;
+  height: auto; /* Alinhamento dinâmico sem distorção */
+  object-fit: cover;
+  object-position: center;
+  border-radius: 34px;
+  display: block;
+}
+
+.heroFloatingCard {
+  position: absolute;
+  left: 28px;
+  bottom: 28px;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(12px);
+  border-radius: 18px;
+  padding: 14px 16px;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.1);
+  max-width: 220px;
+  border: 1px solid #e0ded7;
+  color: #211512;
+}
 
 @media (max-width: 768px) {
   .header {
@@ -98,7 +151,7 @@ button {
   .hero {
     grid-template-columns: 1fr;
     padding: 26px 18px;
-    gap: 24px;
+    gap: 34px;
   }
 
   .heroText h1 {
@@ -109,33 +162,38 @@ button {
     font-size: 15px;
   }
 
-.heroImage {
-  order: -1;
+  .heroImage {
+    order: -1;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    padding: 0;
+    border-radius: 26px;
+  }
 
-  width: 82%;
-  min-height: 260px;
-  max-height: 340px;
-
-  margin: 0 auto;
-
-  border-radius: 24px;
-  overflow: hidden;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  .heroImage img {
+    border-radius: 26px;
+    height: auto;
+  }
 }
 
-.heroImage img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  border-radius: 24px;
-}
-}
+/* ==========================================================================
+   SERVIÇOS
+   ========================================================================== */
 
 .services {
   padding: 80px 70px;
+  position: relative;
+}
+
+.services::before {
+  display: none;
+}
+
+.servicesTop,
+.servicesGrid {
+  position: relative;
+  z-index: 2;
 }
 
 .servicesTop {
@@ -144,7 +202,7 @@ button {
 }
 
 .servicesTop span {
-  color: #b85b68;
+  color: #6b5d57;
   font-size: 13px;
   font-weight: 800;
   letter-spacing: 2px;
@@ -154,6 +212,7 @@ button {
   font-size: 46px;
   margin-top: 14px;
   line-height: 1.1;
+  color: #211512;
 }
 
 .servicesGrid {
@@ -168,7 +227,8 @@ button {
   overflow: hidden;
   position: relative;
   padding-bottom: 26px;
-  box-shadow: 0 10px 40px rgba(0,0,0,.06);
+  box-shadow: 0 10px 40px rgba(33, 21, 18, 0.05);
+  border: 1px solid #e0ded7;
 }
 
 .serviceCard img {
@@ -181,11 +241,12 @@ button {
   padding: 0 24px;
   margin-top: 24px;
   font-size: 28px;
+  color: #211512;
 }
 
 .serviceCard p {
   padding: 0 24px;
-  color: #666;
+  color: #5c504a;
   line-height: 1.6;
 }
 
@@ -200,11 +261,11 @@ button {
 
 .oldPrice {
   text-decoration: line-through;
-  color: #999;
+  color: #9c928d;
 }
 
 .prices strong {
-  color: #b85b68;
+  color: #402e29;
   font-size: 28px;
 }
 
@@ -216,7 +277,7 @@ button {
   position: absolute;
   top: 18px;
   left: 18px;
-  background: #ff4d6d;
+  background: #402e29;
   color: white;
   padding: 8px 14px;
   border-radius: 999px;
@@ -225,7 +286,6 @@ button {
 }
 
 @media (max-width: 768px) {
-
   .services {
     padding: 60px 18px;
   }
@@ -241,13 +301,16 @@ button {
   .serviceCard img {
     height: 220px;
   }
-
 }
+
+/* ==========================================================================
+   MODAL
+   ========================================================================== */
 
 .modalOverlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,.45);
+  background: rgba(33, 21, 18, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -262,7 +325,8 @@ button {
   border-radius: 28px;
   padding: 28px;
   position: relative;
-  box-shadow: 0 30px 90px rgba(0,0,0,.25);
+  box-shadow: 0 30px 90px rgba(33, 21, 18, 0.18);
+  border: 1px solid #e0ded7;
 }
 
 .closeModal {
@@ -274,15 +338,18 @@ button {
   padding: 0;
   border-radius: 50%;
   font-size: 24px;
+  background: #f5f4f0;
+  color: #211512;
 }
 
 .modalBox h2 {
   margin: 0;
   font-size: 30px;
+  color: #211512;
 }
 
 .modalService {
-  color: #b85b68;
+  color: #402e29;
   font-weight: 800;
   margin-bottom: 20px;
 }
@@ -290,11 +357,12 @@ button {
 .modalBox input {
   width: 100%;
   height: 48px;
-  border: 1px solid #eee;
+  border: 1px solid #e0ded7;
   border-radius: 14px;
   padding: 0 14px;
   margin-bottom: 12px;
   font-size: 15px;
+  background: #fafafa;
 }
 
 .horariosGrid {
@@ -305,9 +373,9 @@ button {
 }
 
 .horariosGrid button {
-  background: #fff7f6;
-  color: #b85b68;
-  border: 1px solid #f0c6cc;
+  background: #f5f4f0;
+  color: #211512;
+  border: 1px solid #e0ded7;
 }
 
 .confirmBtn {
@@ -316,9 +384,9 @@ button {
 }
 
 .horariosGrid button.selecionado {
-  background: #b85b68;
+  background: #402e29;
   color: white;
-  border-color: #b85b68;
+  border-color: #402e29;
 }
 
 .horariosGrid button.indisponivel {
@@ -328,16 +396,10 @@ button {
   cursor: not-allowed;
 }
 
-.horariosGrid button.selecionado {
-  background: #b85b68;
-  color: white;
-  border-color: #b85b68;
-}
-
 .modalMessage {
-  background: #fff7f6;
-  color: #b85b68;
-  border: 1px solid #f0c6cc;
+  background: #f5f4f0;
+  color: #211512;
+  border: 1px solid #e0ded7;
   padding: 12px 14px;
   border-radius: 14px;
   font-size: 14px;
@@ -345,15 +407,19 @@ button {
   margin-bottom: 14px;
 }
 
+/* ==========================================================================
+   PAINEL ADMIN & DASHBOARD
+   ========================================================================== */
+
 .adminPage {
   min-height: 100vh;
   padding: 40px;
-  background: #fff7f6;
+  background: #f5f4f0;
 }
 
 .adminPage h1 {
   margin-top: 0;
-  color: #3a1f22;
+  color: #211512;
 }
 
 .adminGrid {
@@ -366,37 +432,37 @@ button {
   background: white;
   border-radius: 22px;
   padding: 20px;
-  box-shadow: 0 10px 35px rgba(0,0,0,.06);
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.04);
   display: flex;
   flex-direction: column;
   gap: 8px;
+  border: 1px solid #e0ded7;
 }
 
 .adminCard strong {
   font-size: 20px;
-  color: #b85b68;
+  color: #402e29;
 }
 
 .adminCard span {
-  color: #555;
+  color: #5c504a;
 }
 
 .adminCard p {
   margin: 0;
-  color: #444;
+  color: #4a3f3a;
 }
 
 .adminCard b {
   margin-top: 8px;
   font-size: 22px;
-  color: #3a1f22;
+  color: #211512;
 }
 
 @media (max-width: 768px) {
   .adminPage {
     padding: 22px;
   }
-
   .adminGrid {
     grid-template-columns: 1fr;
   }
@@ -413,18 +479,19 @@ button {
   background: white;
   border-radius: 22px;
   padding: 24px;
-  box-shadow: 0 10px 35px rgba(0,0,0,.06);
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e0ded7;
 }
 
 .statCard span {
   display: block;
-  color: #666;
+  color: #6b5d57;
   margin-bottom: 10px;
 }
 
 .statCard strong {
   font-size: 34px;
-  color: #b85b68;
+  color: #211512;
 }
 
 .status {
@@ -443,13 +510,13 @@ button {
 }
 
 .status.concluido {
-  background: #ddffe7;
-  color: #00a63e;
+  background: #dcffe9;
+  color: #087a35;
 }
 
 .status.cancelado {
   background: #ffe1e1;
-  color: #d10000;
+  color: #c40000;
 }
 
 .adminActions {
@@ -459,24 +526,22 @@ button {
 }
 
 .successBtn {
-  background: #12b76a;
+  background: #087a35;
 }
 
 .cancelBtn {
-  background: #ff4d4f;
+  background: #c40000;
 }
 
 @media (max-width: 768px) {
-
   .statsGrid {
     grid-template-columns: 1fr;
   }
-
 }
 
 .adminTitle {
   margin: 38px 0 18px;
-  color: #3a1f22;
+  color: #211512;
 }
 
 .servicesAdminGrid {
@@ -489,10 +554,11 @@ button {
   background: white;
   border-radius: 24px;
   padding: 22px;
-  box-shadow: 0 10px 35px rgba(0,0,0,.06);
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.04);
   display: flex;
   flex-direction: column;
   gap: 12px;
+  border: 1px solid #e0ded7;
 }
 
 .serviceAdminCard img {
@@ -500,17 +566,18 @@ button {
   height: 220px;
   object-fit: cover;
   border-radius: 18px;
-  background: #fff7f6;
+  background: #f5f4f0;
 }
 
 .serviceAdminCard input,
 .serviceAdminCard textarea {
   width: 100%;
-  border: 1px solid #eee;
+  border: 1px solid #e0ded7;
   border-radius: 14px;
   padding: 13px 14px;
   font-size: 14px;
   outline: none;
+  background: #fafafa;
 }
 
 .serviceAdminCard textarea {
@@ -519,15 +586,18 @@ button {
   font-family: Arial, sans-serif;
 }
 
+/* ==========================================================================
+   CORREÇÃO DO BOTÃO WHATSAPP (DESTACADO E VIVO NO FINAL DA PÁGINA)
+   ========================================================================== */
 .whatsappBtn {
   background: #25d366 !important;
-  color: white;
+  color: #ffffff !important;
+  font-weight: 900 !important;
+  box-shadow: 0 8px 24px rgba(37, 211, 102, 0.3) !important;
 }
 
-.adminActions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+.whatsappBtn:hover {
+  background: #20ba59 !important;
 }
 
 .adminActions button {
@@ -557,31 +627,20 @@ button {
   width: 100%;
 }
 
-.serviceAdminCard,
-.agendaControlCard {
-  overflow: hidden;
-}
-
 @media (max-width: 768px) {
   .adminActions {
     flex-direction: column;
   }
-
   .adminActions button {
     width: 100%;
     min-width: 0;
   }
-
   .checkLine {
     font-size: 14px;
   }
-}
-
-@media (max-width: 768px) {
   .servicesAdminGrid {
     grid-template-columns: 1fr;
   }
-
   .serviceAdminCard img {
     height: 190px;
   }
@@ -589,8 +648,8 @@ button {
 
 .adminMessage {
   background: #fff;
-  color: #b85b68;
-  border: 1px solid #f0c6cc;
+  color: #402e29;
+  border: 1px solid #e0ded7;
   padding: 14px 18px;
   border-radius: 16px;
   font-weight: 800;
@@ -600,28 +659,62 @@ button {
 
 .imagePreview {
   width: 100%;
-  height: 220px;
-  background: #fff7f6;
+  height: 200px; /* Altura máxima controlada para não esticar no desktop */
+  max-height: 220px;
+  background: #ffffff;
   border-radius: 18px;
   overflow: hidden;
-  border: 1px solid #eee;
+  border: 1px solid #e0ded7;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #999;
+  color: #9c928d;
   font-weight: 800;
+  margin-bottom: 16px;
 }
 
 .imagePreview img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: cover; /* Recorta a imagem proporcionalmente sem distorcer ou esticar */
+  object-position: center;
+}
+
+/* 2. Imagens dos Cards de Serviços / Galeria no Admin */
+.serviceAdminCard img, 
+.galleryCard img {
+  width: 100%;
+  height: 180px; /* Reduzido de 220px para um tamanho mais controlado e elegante */
+  max-height: 200px;
+  object-fit: cover; /* Garante que a foto preencha o espaço sem ficar gigante */
+  border-radius: 14px;
+  background: #f5f4f0;
+  display: block;
+}
+
+/* 3. Ajuste Responsivo para Mobile (Celulares) */
+@media (max-width: 768px) {
+  .imagePreview {
+    height: 140px; /* No celular, o preview do topo fica mais compacto */
+  }
+
+  .serviceAdminCard img, 
+  .galleryCard img {
+    height: 160px; /* Evita que a imagem ocupe a tela inteira do celular */
+  }
+  
+  /* Garante que o grid do admin não quebre e esmague os elementos */
+  .servicesAdminGrid, 
+  .adminGrid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
 }
 
 .uploadBox {
-  background: #fff7f6;
-  color: #b85b68;
-  border: 1px dashed #b85b68;
+  background: #f5f4f0;
+  color: #211512;
+  border: 1px dashed #402e29;
   border-radius: 16px;
   padding: 14px;
   text-align: center;
@@ -636,7 +729,7 @@ button {
 .modalSelect {
   width: 100%;
   height: 48px;
-  border: 1px solid #eee;
+  border: 1px solid #e0ded7;
   border-radius: 14px;
   padding: 0 14px;
   margin-bottom: 12px;
@@ -646,12 +739,12 @@ button {
 }
 
 .adminPremium {
-  background: #f7f7f8;
+  background: #fafafa;
   color: #1f1f1f;
 }
 
 .adminTopBar {
-  background: linear-gradient(135deg, #1f1f1f, #3a1f22);
+  background: linear-gradient(135deg, #211512, #402e29);
   color: white;
   border-radius: 30px;
   padding: 30px;
@@ -669,21 +762,14 @@ button {
 
 .adminTopBar p {
   margin: 0;
-  color: rgba(255,255,255,.72);
+  color: rgba(255, 255, 255, 0.75);
 }
 
 .adminEyebrow {
-  color: #ffd7df;
+  color: #e0ded7;
   font-weight: 900;
   letter-spacing: 2px;
   font-size: 12px;
-}
-
-.storeOpen,
-.storeClosed {
-  padding: 12px 18px;
-  border-radius: 999px;
-  font-weight: 900;
 }
 
 .storeOpen {
@@ -714,14 +800,16 @@ button {
   background: white;
   border-radius: 26px;
   padding: 24px;
-  box-shadow: 0 10px 35px rgba(0,0,0,.06);
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.04);
   display: flex;
   flex-direction: column;
   gap: 12px;
+  border: 1px solid #e0ded7;
 }
 
 .agendaControlCard h3 {
   margin: 0 0 8px;
+  color: #211512;
 }
 
 .agendaControlCard input,
@@ -729,7 +817,7 @@ button {
 .premiumForm input,
 .premiumForm textarea {
   width: 100%;
-  border: 1px solid #ececec;
+  border: 1px solid #e0ded7;
   border-radius: 16px;
   padding: 14px;
   font-size: 14px;
@@ -737,17 +825,10 @@ button {
   background: #fafafa;
 }
 
-.agendaControlCard textarea,
-.premiumForm textarea {
-  min-height: 90px;
-  resize: vertical;
-  font-family: Arial, sans-serif;
-}
-
 .formLabel {
   font-size: 13px;
   font-weight: 900;
-  color: #555;
+  color: #5c504a;
   margin-top: 4px;
 }
 
@@ -758,7 +839,7 @@ button {
   padding: 14px;
   background: #fafafa;
   border-radius: 18px;
-  border: 1px solid #eee;
+  border: 1px solid #e0ded7;
 }
 
 .switchLine input {
@@ -768,12 +849,12 @@ button {
 
 .switchLine strong {
   display: block;
-  color: #222;
+  color: #211512;
 }
 
 .switchLine span {
   display: block;
-  color: #777;
+  color: #6b5d57;
   font-size: 13px;
   margin-top: 3px;
 }
@@ -792,31 +873,24 @@ button {
   justify-content: space-between;
   gap: 14px;
   align-items: center;
-  box-shadow: 0 8px 25px rgba(0,0,0,.05);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.03);
+  border: 1px solid #e0ded7;
 }
 
 .bloqueioItem strong {
   display: block;
-  color: #b85b68;
+  color: #402e29;
   margin-bottom: 4px;
 }
 
 .bloqueioItem span {
-  color: #666;
+  color: #5c504a;
   font-size: 13px;
 }
 
 .bloqueioItem button {
-  background: #ff4d4f;
+  background: #c40000;
   padding: 10px 14px;
-}
-
-.orderCard {
-  border: 1px solid #eee;
-}
-
-.serviceAdminCard {
-  border: 1px solid #eee;
 }
 
 @media (max-width: 768px) {
@@ -827,25 +901,18 @@ button {
     border-radius: 24px;
     padding: 24px;
   }
-
   .adminTopBar h1 {
     font-size: 30px;
   }
-
-  .premiumStats {
-    grid-template-columns: 1fr;
-  }
-
+  .premiumStats,
   .agendaControlGrid {
     grid-template-columns: 1fr;
   }
-
   .bloqueioItem {
     flex-direction: column;
     align-items: flex-start;
   }
 }
-
 
 html {
   scroll-behavior: smooth;
@@ -853,14 +920,15 @@ html {
 
 .heroBadge {
   display: inline-flex;
-  background: #fff;
-  color: #b85b68;
+  background: #ffffff;
+  color: #402e29;
   padding: 10px 16px;
   border-radius: 999px;
   font-size: 12px;
   font-weight: 900;
   margin-bottom: 18px;
-  box-shadow: 0 10px 30px rgba(0,0,0,.06);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e0ded7;
 }
 
 .heroButtons {
@@ -875,127 +943,191 @@ html {
   padding: 0 22px;
   border-radius: 14px;
   background: white;
-  color: #b85b68;
+  color: #211512;
   font-weight: 800;
   text-decoration: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 10px 30px rgba(0,0,0,.06);
-}
-
-.heroImage {
-  width: 100%;
-  max-width: 620px;
-  height: 520px;
-
-  margin-left: auto;
-  margin-right: auto;
-
-  background: #fff;
-  border-radius: 34px;
-  overflow: hidden;
-  position: relative;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  padding: 14px;
-
-  box-shadow:
-    0 24px 70px rgba(184, 91, 104, 0.12),
-    0 10px 30px rgba(0,0,0,.05);
-}
-
-.heroImage img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  border-radius: 24px;
-  background: #fff7f6;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e0ded7;
 }
 
 .heroFloatingCard {
-  position: absolute;
-  left: 28px;
-  bottom: 28px;
-
-  background: rgba(255,255,255,.96);
-  backdrop-filter: blur(12px);
-
-  border-radius: 18px;
-  padding: 14px 16px;
-
-  box-shadow: 0 14px 34px rgba(0,0,0,.12);
-
-  max-width: 220px;
+  color: #211512;
 }
-
-.heroFloatingCard strong {
-  font-size: 15px;
-}
-
-.heroFloatingCard span {
-  font-size: 12px;
-  line-height: 1.45;
-}
-
 
 @media (max-width: 768px) {
-  .heroImage {
-    width: 100%;
+  .modalOverlay {
+    align-items: flex-start;
+    padding: 90px 14px 24px;
+  }
+  .modalBox {
     max-width: 100%;
-    height: 320px;
-    min-height: 0;
-    max-height: none;
-    padding: 10px;
-    border-radius: 26px;
-    margin: 0;
+    padding: 26px 22px;
   }
-
-  .heroImage img {
-    border-radius: 20px;
-    object-fit: cover;
+  .modalBox h2 {
+    font-size: 38px;
   }
-
-  .heroFloatingCard {
-    display: none;
+  .modalBox input,
+  .modalSelect {
+    height: 56px;
+    font-size: 16px;
+    border-radius: 18px;
+  }
+  .horariosGrid button {
+    height: 58px;
+    font-size: 14px;
+  }
+  .confirmBtn {
+    height: 58px;
+    font-size: 14px;
   }
 }
 
+.modalFieldLabel {
+  display: block;
+  margin: 4px 0 10px;
+  color: #402e29;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.dateInput {
+  width: 100%;
+  height: 58px;
+  border: 1px solid #e0ded7;
+  border-radius: 18px;
+  padding: 0 16px;
+  background: white;
+  color: #211512;
+  font-size: 16px;
+}
+
+.cancelled {
+  opacity: .82;
+  border: 1px solid #ffd2d2;
+}
+
+.statusBadge.cancel {
+  background: #ffe7e7;
+  color: #c40000;
+}
+
+.deleteBtn {
+  width: 100%;
+  margin-top: 14px;
+  background: #c40000;
+  color: white;
+  height: 46px;
+  border-radius: 14px;
+  font-weight: 900;
+}
+
+.successCard {
+  background: white;
+  border: 1px solid #dcf5e3;
+}
+
+.statIcon {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  background: #087a35;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 900;
+  box-shadow: 0 10px 20px rgba(8, 122, 53, 0.15);
+}
+
+.successCard strong {
+  color: #087a35;
+}
+
+.confirmInfo {
+  background: white;
+  border: 1px solid #e0ded7;
+  color: #402e29;
+  padding: 14px 16px;
+  border-radius: 18px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.5;
+  margin-bottom: 14px;
+  text-align: center;
+}
+
+.modalMessage.success {
+  background: #dcffe9;
+  border: 1px solid #087a35;
+  color: #087a35;
+}
+
+.modalMessage.error {
+  background: #ffe1e1;
+  border: 1px solid #c40000;
+  color: #c40000;
+}
+
+.pulseBtn::after {
+  display: none;
+}
+
+.adminMenu {
+  position: sticky;
+  top: 12px;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 12px;
+  margin-bottom: 26px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(14px);
+  border: 1px solid #e0ded7;
+  border-radius: 22px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+}
+
+.adminMenu a {
+  white-space: nowrap;
+  background: #f5f4f0;
+  color: #211512;
+  padding: 11px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 900;
+  text-decoration: none;
+  transition: .2s;
+}
+
+.adminMenu a:hover {
+  background: #402e29;
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .adminMenu {
+    margin-left: -4px;
+    margin-right: -4px;
+    border-radius: 18px;
+  }
+  .adminMenu a {
+    font-size: 12px;
+    padding: 10px 14px;
+  }
+}
 
 .servicesDescription {
   max-width: 620px;
   margin: 18px auto 0;
-  color: #777;
+  color: #5c504a;
   font-size: 16px;
   line-height: 1.7;
-}
-
-.services {
-  position: relative;
-}
-
-.services::before {
-  content: "";
-  position: absolute;
-  top: 80px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 420px;
-  height: 420px;
-  background: rgba(184, 91, 104, 0.08);
-  filter: blur(90px);
-  border-radius: 50%;
-  z-index: 0;
-}
-
-.servicesTop,
-.servicesGrid {
-  position: relative;
-  z-index: 2;
 }
 
 .gallerySection {
@@ -1010,10 +1142,11 @@ html {
 }
 
 .galleryCard {
-  background: #fff7f6;
+  background: #f5f4f0;
   border-radius: 26px;
   overflow: hidden;
-  box-shadow: 0 10px 35px rgba(0,0,0,.06);
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e0ded7;
 }
 
 .galleryCard img {
@@ -1028,23 +1161,23 @@ html {
 
 .galleryCard strong {
   display: block;
-  color: #3a1f22;
+  color: #211512;
   font-size: 18px;
   margin-bottom: 6px;
 }
 
 .galleryCard span {
-  color: #666;
+  color: #5c504a;
   font-size: 14px;
 }
 
 .contactSection {
   padding: 80px 70px;
-  background: #fff7f6;
+  background: #f5f4f0;
 }
 
 .contactBox {
-  background: #b85b68;
+  background: #402e29;
   color: white;
   border-radius: 34px;
   padding: 42px;
@@ -1058,6 +1191,7 @@ html {
   font-size: 13px;
   font-weight: 900;
   letter-spacing: 2px;
+  color: #e0ded7;
 }
 
 .contactBox h2 {
@@ -1067,18 +1201,20 @@ html {
 
 .contactBox p {
   line-height: 1.6;
+  
 }
 
 .contactInfo {
   background: white;
-  color: #3a1f22;
+  color: #211512;
   border-radius: 24px;
   padding: 24px;
+  border: 1px solid #e0ded7;
 }
 
 .contactInfo a {
   display: inline-flex;
-  background: #b85b68;
+  background: #402e29;
   color: white;
   text-decoration: none;
   padding: 14px 18px;
@@ -1092,475 +1228,17 @@ html {
   .contactSection {
     padding: 60px 18px;
   }
-
-  .galleryGrid {
+  .galleryGrid,
+  .contactBox {
     grid-template-columns: 1fr;
   }
-
   .galleryCard img {
     height: 240px;
   }
-
   .contactBox {
-    grid-template-columns: 1fr;
     padding: 28px;
   }
-
   .contactBox h2 {
     font-size: 32px;
   }
-}
-
-.adminTopActions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.logoutBtn {
-  background: rgba(255,255,255,.14);
-  color: white;
-  border: 1px solid rgba(255,255,255,.28);
-  border-radius: 999px;
-  padding: 12px 18px;
-  font-weight: 900;
-}
-
-.logoutBtn:hover {
-  background: rgba(255,255,255,.22);
-}
-
-.dangerFullBtn {
-  background: #ff4d4f !important;
-  width: 100%;
-}
-
-@media (max-width: 768px) {
-  .adminTopActions {
-    width: 100%;
-    justify-content: space-between;
-  }
-}
-
-.loginPage {
-  min-height: 100vh;
-  background:
-    radial-gradient(circle at top, rgba(184,91,104,.18), transparent 35%),
-    #fff7f6;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-}
-
-.loginCard {
-  width: 100%;
-  max-width: 420px;
-  background: white;
-  border-radius: 34px;
-  padding: 34px;
-  box-shadow: 0 30px 90px rgba(184,91,104,.18);
-}
-
-.loginLogo {
-  width: 72px;
-  height: 72px;
-  border-radius: 22px;
-  background: linear-gradient(135deg, #ff8fa3, #b85b68);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 42px;
-  font-weight: 900;
-  margin-bottom: 22px;
-}
-
-.loginCard h1 {
-  margin: 0;
-  font-size: 34px;
-  color: #2d1217;
-}
-
-.loginCard p {
-  color: #666;
-  line-height: 1.6;
-  margin-bottom: 24px;
-}
-
-.loginCard form {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.loginCard input {
-  width: 100%;
-  height: 54px;
-  border: 1px solid #eee;
-  border-radius: 16px;
-  padding: 0 16px;
-  font-size: 15px;
-  outline: none;
-}
-
-.loginCard input:focus {
-  border-color: #b85b68;
-}
-
-.loginCard button {
-  height: 54px;
-  border-radius: 16px;
-  background: #b85b68;
-  color: white;
-  font-weight: 900;
-}
-
-.loginMessage {
-  background: #fff7f6;
-  border: 1px solid #f0c6cc;
-  color: #b85b68;
-  padding: 12px 14px;
-  border-radius: 14px;
-  font-weight: 800;
-}
-
-.loadingAdmin {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #fff7f6;
-  color: #b85b68;
-  font-size: 18px;
-  font-weight: 900;
-}
-
-.modalBox input[type="date"] {
-  width: 100%;
-  min-width: 0;
-  max-width: 100%;
-
-  appearance: none;
-  -webkit-appearance: none;
-
-  overflow: hidden;
-
-  font-size: 16px;
-
-  background: #fff;
-}
-
-.modalBox input[type="date"]::before {
-  content: "Escolha a data";
-  color: #999;
-  margin-right: 10px;
-}
-
-.modalBox input[type="date"]:valid::before {
-  content: "";
-}
-
-@media (max-width: 768px) {
-  .modalOverlay {
-    align-items: flex-start;
-    padding: 90px 14px 24px;
-    overflow-y: auto;
-  }
-
-  .modalBox {
-    max-width: 100%;
-    padding: 26px 22px;
-    border-radius: 28px;
-  }
-
-  .modalBox h2 {
-    font-size: 38px;
-  }
-
-  .modalBox input,
-  .modalSelect {
-    height: 56px;
-    font-size: 16px;
-    border-radius: 18px;
-  }
-
-  .modalBox input[type="date"] {
-    min-width: 0;
-    width: 100%;
-    max-width: 100%;
-    display: block;
-    appearance: none;
-    -webkit-appearance: none;
-  }
-
-  .horariosGrid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-  }
-
-  .horariosGrid button {
-    min-width: 0;
-    padding: 0;
-    height: 58px;
-    font-size: 14px;
-  }
-
-  .confirmBtn {
-    height: 58px;
-    font-size: 14px;
-  }
-}
-
-.modalFieldLabel {
-  display: block;
-  margin: 4px 0 10px;
-  color: #b85b68;
-  font-size: 13px;
-  font-weight: 900;
-}
-
-.dateField {
-  width: 100%;
-  margin-bottom: 16px;
-}
-
-.modalFieldLabel {
-  display: block;
-  margin-bottom: 10px;
-
-  color: #b85b68;
-  font-size: 13px;
-  font-weight: 900;
-}
-
-.dateInput {
-  width: 100%;
-  height: 58px;
-
-  border: 1px solid #eee;
-  border-radius: 18px;
-
-  padding: 0 16px;
-
-  background: white;
-  color: #3a1f22;
-
-  font-size: 16px;
-
-  appearance: none;
-  -webkit-appearance: none;
-}
-
-.cancelled {
-  opacity: .82;
-  border: 1px solid #ffd2d2;
-}
-
-.statusBadge.cancel {
-  background: #ffe7e7;
-  color: #ff4d4f;
-}
-
-.deleteBtn {
-  width: 100%;
-  margin-top: 14px;
-
-  background: #ff4d4f;
-  color: white;
-
-  height: 46px;
-  border-radius: 14px;
-
-  font-weight: 900;
-}
-
-.deleteBtn:hover {
-  opacity: .92;
-}
-
-.successCard {
-  background:
-    linear-gradient(
-      135deg,
-      #ffffff,
-      #f8fff9
-    );
-
-  border: 1px solid #dcf5e3;
-}
-
-.statTop {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 14px;
-}
-
-.statIcon {
-  width: 42px;
-  height: 42px;
-
-  border-radius: 14px;
-
-  background: #18c964;
-  color: white;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  font-size: 20px;
-  font-weight: 900;
-
-  box-shadow: 0 10px 20px rgba(24,201,100,.25);
-}
-
-.successCard strong {
-  color: #18c964;
-}
-
-.successCard small {
-  display: block;
-  margin-top: 8px;
-  color: #777;
-  font-size: 13px;
-}
-
-.confirmArea {
-  margin-top: 18px;
-}
-
-.confirmInfo {
-  background: linear-gradient(
-    135deg,
-    #fff7f8,
-    #fff
-  );
-
-  border: 1px solid #f3d1d7;
-
-  color: #b85b68;
-
-  padding: 14px 16px;
-
-  border-radius: 18px;
-
-  font-size: 13px;
-  font-weight: 700;
-
-  line-height: 1.5;
-
-  margin-bottom: 14px;
-
-  text-align: center;
-}
-
-.modalMessage.success {
-  background: #ecfff3;
-  border: 1px solid #b7f0cb;
-  color: #18a957;
-}
-
-.modalMessage.error {
-  background: #fff5f5;
-  border: 1px solid #ffd2d2;
-  color: #ff4d4f;
-}
-
-.pulseBtn {
-  position: relative;
-  overflow: hidden;
-}
-
-.pulseBtn::after {
-  content: "";
-
-  position: absolute;
-  inset: 0;
-
-  background: linear-gradient(
-    120deg,
-    transparent,
-    rgba(255,255,255,.35),
-    transparent
-  );
-
-  transform: translateX(-100%);
-
-  animation: shine 2.2s infinite;
-}
-
-@keyframes shine {
-  100% {
-    transform: translateX(100%);
-  }
-}
-
-.adminMenu {
-  position: sticky;
-  top: 12px;
-  z-index: 80;
-
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  overflow-x: auto;
-
-  padding: 12px;
-
-  margin-bottom: 26px;
-
-  background: rgba(255,255,255,.92);
-  backdrop-filter: blur(14px);
-
-  border: 1px solid #eee;
-  border-radius: 22px;
-
-  box-shadow:
-    0 10px 30px rgba(0,0,0,.04),
-    0 4px 12px rgba(184,91,104,.05);
-}
-
-.adminMenu::-webkit-scrollbar {
-  display: none;
-}
-
-.adminMenu a {
-  white-space: nowrap;
-
-  background: #fff7f6;
-  color: #b85b68;
-
-  padding: 11px 16px;
-
-  border-radius: 999px;
-
-  font-size: 13px;
-  font-weight: 900;
-
-  text-decoration: none;
-
-  transition: .2s;
-}
-
-.adminMenu a:hover {
-  background: #b85b68;
-  color: white;
-}
-
-@media (max-width: 768px) {
-
-  .adminMenu {
-    margin-left: -4px;
-    margin-right: -4px;
-    border-radius: 18px;
-  }
-
-  .adminMenu a {
-    font-size: 12px;
-    padding: 10px 14px;
-  }
-
 }

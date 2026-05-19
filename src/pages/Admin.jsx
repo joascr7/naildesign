@@ -57,7 +57,7 @@ export default function Admin() {
   });
 
   const [configSite, setConfigSite] = useState({
-    nomeLoja: "NailDesign",
+    nomeLoja: "Lais Eduarda",
     whatsapp: "",
     instagram: "",
     endereco: "",
@@ -165,7 +165,7 @@ export default function Admin() {
       const dados = snap.data();
 
       setConfigSite({
-        nomeLoja: dados.nomeLoja || "NailDesign",
+        nomeLoja: dados.nomeLoja || "Lais Eduarda",
         whatsapp: dados.whatsapp || "",
         instagram: dados.instagram || "",
         endereco: dados.endereco || "",
@@ -278,7 +278,7 @@ export default function Admin() {
 
     try {
       await setDoc(doc(db, "siteConfig", "principal"), {
-        nomeLoja: configSite.nomeLoja || "NailDesign",
+        nomeLoja: configSite.nomeLoja || "Lais Eduarda",
         whatsapp: configSite.whatsapp || "",
         instagram: configSite.instagram || "",
         endereco: configSite.endereco || "",
@@ -469,7 +469,7 @@ export default function Admin() {
   const texto = encodeURIComponent(
   `Olá ${item.clienteNome}, tudo bem? 
 
-Aqui é da NailDesign sobre seu agendamento.
+Aqui é Lais Eduarda sobre seu agendamento.
 
  Serviço: ${item.servicoNome}
  Data: ${item.data}
@@ -506,7 +506,7 @@ Assim conseguimos reservar seu horário exclusivamente para você. `
 
     <div>
       <span className="adminEyebrow">
-        NailDesign
+        Lais Eduarda
       </span>
 
       <h1>

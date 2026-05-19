@@ -13,7 +13,7 @@ export default function Gallery({ galeria = [] }) {
         </h2>
 
         <p className="servicesDescription">
-          Confira alguns resultados reais de unhas em gel, nail design e
+          Confira alguns resultados reais de unhas em gel e
           acabamentos personalizados.
         </p>
       </div>
@@ -21,7 +21,7 @@ export default function Gallery({ galeria = [] }) {
       <div className="galleryGrid">
         {fotosAtivas.map((item) => (
           <div className="galleryCard" key={item.id}>
-            <img src={item.imagemUrl} alt={item.titulo || "NailDesign"} />
+            <img src={item.imagemUrl} alt={item.titulo || "Lais Eduarda"} />
 
             <div>
               <strong>{item.titulo}</strong>
