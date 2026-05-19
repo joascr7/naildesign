@@ -21,7 +21,7 @@ export default function Gallery({ galeria = [] }) {
       <div className="galleryGrid">
         {fotosAtivas.map((item) => (
           <div className="galleryCard" key={item.id}>
-            <img src={item.imagemUrl} alt={item.titulo || "Lais Eduarda"} />
+            <img src={item.imagemUrl} alt={item.titulo || "Lays Nails Designer"} />
 
             <div>
               <strong>{item.titulo}</strong>

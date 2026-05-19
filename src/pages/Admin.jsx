@@ -63,7 +63,7 @@ const [grupoCanceladosAberto, setGrupoCanceladosAberto] =
   });
 
   const [configSite, setConfigSite] = useState({
-    nomeLoja: "Lais Eduarda",
+    nomeLoja: "Lays Nails Designer",
     whatsapp: "",
     instagram: "",
     endereco: "",
@@ -73,6 +73,8 @@ const [grupoCanceladosAberto, setGrupoCanceladosAberto] =
 
   const [novoBloqueio, setNovoBloqueio] = useState(bloqueioVazio);
   const [bloqueios, setBloqueios] = useState([]);
+  const [horariosAdmin, setHorariosAdmin] =
+  useState([]);
 
   const [galeria, setGaleria] = useState([]);
   const [novaGaleria, setNovaGaleria] = useState(galeriaVazia);
@@ -84,7 +86,8 @@ const [grupoCanceladosAberto, setGrupoCanceladosAberto] =
       carregarConfigAgenda(),
       carregarConfigSite(),
       carregarBloqueios(),
-      carregarGaleria()
+      carregarGaleria(),
+      carregarHorariosAdmin()
     ]);
   }
 
@@ -99,6 +102,86 @@ const [grupoCanceladosAberto, setGrupoCanceladosAberto] =
       }))
     );
   }
+
+
+  function adicionarHorario() {
+
+  setHorariosAdmin((atual) => [
+    ...atual,
+    ""
+  ]);
+}
+
+function alterarHorario(index, valor) {
+
+  const copia = [...horariosAdmin];
+
+  copia[index] = valor;
+
+  setHorariosAdmin(copia);
+}
+
+function removerHorario(index) {
+
+  setHorariosAdmin((atual) =>
+    atual.filter((_, i) => i !== index)
+  );
+}
+
+
+async function salvarHorariosAdmin() {
+
+  try {
+
+    const horariosLimpos =
+      horariosAdmin
+        .filter((h) => h?.trim())
+        .sort();
+
+    await setDoc(
+      doc(db, "configAgenda", "horarios"),
+      {
+        lista: horariosLimpos
+      }
+    );
+
+    setMensagem(
+      "Horários salvos com sucesso."
+    );
+
+  } catch (e) {
+
+    console.log(e);
+
+    setMensagem(
+      "Erro ao salvar horários."
+    );
+  }
+}
+
+  async function carregarHorariosAdmin() {
+
+  try {
+
+    const snap = await getDoc(
+      doc(db, "configAgenda", "horarios")
+    );
+
+    if (snap.exists()) {
+
+      setHorariosAdmin(
+        snap.data().lista || []
+      );
+
+    } else {
+
+      setHorariosAdmin([]);
+    }
+
+  } catch (e) {
+    console.log(e);
+  }
+}
 
   async function excluirAgendamento(id) {
   const confirmar = window.confirm(
@@ -199,7 +282,7 @@ async function excluirServico(id) {
       const dados = snap.data();
 
       setConfigSite({
-        nomeLoja: dados.nomeLoja || "Lais Eduarda",
+        nomeLoja: dados.nomeLoja || "Lays Nails Designer",
         whatsapp: dados.whatsapp || "",
         instagram: dados.instagram || "",
         endereco: dados.endereco || "",
@@ -312,7 +395,7 @@ async function excluirServico(id) {
 
     try {
       await setDoc(doc(db, "siteConfig", "principal"), {
-        nomeLoja: configSite.nomeLoja || "Lais Eduarda",
+        nomeLoja: configSite.nomeLoja || "Lays Nails Designer",
         whatsapp: configSite.whatsapp || "",
         instagram: configSite.instagram || "",
         endereco: configSite.endereco || "",
@@ -576,7 +659,7 @@ async function excluirServico(id) {
   const texto = encodeURIComponent(
   `Olá ${item.clienteNome}, tudo bem? 
 
-Aqui é Lais Eduarda sobre seu agendamento.
+Aqui é Lays Nails Designer sobre seu agendamento.
 
  Serviço: ${item.servicoNome}
  Data: ${item.data}
@@ -613,7 +696,7 @@ Assim conseguimos reservar seu horário exclusivamente para você. `
 
     <div>
       <span className="adminEyebrow">
-        Lais Eduarda
+        Lays Nails Designer
       </span>
 
       <h1>
@@ -686,6 +769,62 @@ Assim conseguimos reservar seu horário exclusivamente para você. `
 
   </div>
 
+<h2 className="adminTitle">
+  Horários disponíveis
+</h2>
+
+<div className="agendaControlCard">
+
+  {horariosAdmin.map((h, index) => (
+
+    <div
+      key={index}
+      style={{
+        display: "flex",
+        gap: 10,
+        marginBottom: 10
+      }}
+    >
+
+      <input
+        type="time"
+        value={h}
+        onChange={(e) =>
+          alterarHorario(
+            index,
+            e.target.value
+          )
+        }
+      />
+
+      <button
+        type="button"
+        className="dangerBtn"
+        onClick={() =>
+          removerHorario(index)
+        }
+      >
+        Remover
+      </button>
+
+    </div>
+  ))}
+
+  <button
+    type="button"
+    onClick={adicionarHorario}
+  >
+    Adicionar horário
+  </button>
+
+  <button
+    type="button"
+    onClick={salvarHorariosAdmin}
+  >
+    Salvar horários
+  </button>
+
+</div>
       {mensagem && (
         <div className="adminMessage">
           {mensagem}

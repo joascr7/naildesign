@@ -3,7 +3,7 @@ export default function Header({ onAgendar }) {
     <header className="header">
 
       <div>
-        <h2>Lais Eduarda</h2>
+        <h2>Lays Nails Designer</h2>
         <span>UNHAS EM GEL</span>
       </div>
 

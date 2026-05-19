@@ -3,7 +3,7 @@ export default function Hero({ onAgendar, config = {} }) {
     <section id="inicio" className="hero">
       <div className="heroText">
         <span className="heroBadge">
-          Lais Eduarda 
+          Lays Nails Desginer 
         </span>
 
         <h1>
@@ -38,7 +38,7 @@ export default function Hero({ onAgendar, config = {} }) {
 
         <div className="heroFloatingCard">
           <strong>Atendimento premium </strong>
-          <span>Lais Eduarda</span>
+          <span>Lays Nails Designer</span>
         </div>
       </div>
     </section>

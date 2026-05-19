@@ -12,14 +12,7 @@ import {
 
 import { db } from "../firebase";
 
-const horarios = [
-  "09:00",
-  "10:00",
-  "11:00",
-  "14:00",
-  "15:00",
-  "16:00"
-];
+
 
 export default function BookingModal({
   servicoSelecionado,
@@ -29,7 +22,7 @@ export default function BookingModal({
   const [servicoEscolhido, setServicoEscolhido] = useState(
     servicoSelecionado || null
   );
-
+const [horarios, setHorarios] = useState([]);
   const [nome, setNome] = useState("");
   const [telefone, setTelefone] = useState("");
   const [data, setData] = useState("");
@@ -85,6 +78,50 @@ export default function BookingModal({
       dataSelecionada <= dataFinal
     );
   }
+
+  async function carregarHorarios() {
+
+  try {
+
+    const snap = await getDoc(
+      doc(db, "configAgenda", "horarios")
+    );
+
+    if (snap.exists()) {
+
+      const dados = snap.data();
+
+      setHorarios(
+        Array.isArray(dados.lista)
+          ? dados.lista
+          : []
+      );
+
+    } else {
+
+      // evita tela branca
+      setHorarios([
+        "08:00",
+        "11:00",
+        "14:00",
+        "17:00",
+        "19:00"
+      ]);
+    }
+
+  } catch (e) {
+
+    console.log(e);
+
+    setHorarios([
+      "08:00",
+      "11:00",
+      "14:00",
+      "17:00",
+      "19:00"
+    ]);
+  }
+}
 
   async function carregarConfigAgenda() {
 
@@ -306,39 +343,29 @@ export default function BookingModal({
     }
 
     try {
-      setLoading(true);
+  setLoading(true);
 
-      await addDoc(
-        collection(db, "agendamentos"),
-        {
-          clienteNome: nome,
+  await addDoc(
+    collection(db, "agendamentos"),
+    {
+      clienteNome: nome,
+      clienteTelefone: telefone,
+      servicoId: servicoEscolhido.id,
+      servicoNome: servicoEscolhido.nome,
+      valor: precoFinal(),
+      data,
+      horario,
+      status: "agendado",
+      criadoEm: new Date()
+    }
+  );
 
-          clienteTelefone: telefone,
+  setMensagem(
+    "Agendamento realizado com sucesso!"
+  );
 
-          servicoId:
-            servicoEscolhido.id,
-
-          servicoNome:
-            servicoEscolhido.nome,
-
-          valor: precoFinal(),
-
-          data,
-
-          horario,
-
-          status: "agendado",
-
-          criadoEm: new Date()
-        }
-      );
-
-      setMensagem(
-        "Agendamento realizado com sucesso!"
-      );
-
-      const texto = encodeURIComponent(
-  `Novo agendamento pelo site 💅
+  const texto = encodeURIComponent(
+`Novo agendamento pelo site 💅
 
 Cliente: ${nome}
 WhatsApp: ${telefone}
@@ -350,30 +377,38 @@ Horário: ${horario}
 Valor: R$ ${precoFinal().toFixed(2)}
 
 Para confirmação do agendamento é necessário o pagamento antecipado de 40% do valor do procedimento.`
-);
+  );
 
-const numeroLoja =
-  whatsappLoja || "81973258842";
+  const numeroLoja =
+    whatsappLoja || "8183339398";
 
-window.location.href =
-  `https://wa.me/55${numeroLoja}?text=${texto}`;
+  window.location.href =
+    `https://wa.me/55${numeroLoja}?text=${texto}`;
 
-setTimeout(() => {
-  onFechar();
-}, 500);
-      console.error(error);
+  setTimeout(() => {
+    onFechar();
+  }, 500);
 
-      setMensagem(
-        "Erro ao realizar agendamento. Tente novamente."
-      );
-    } finally {
-      setLoading(false);
-    }
+} catch (error) {
+
+  console.log(error);
+
+  setMensagem(
+    "Erro ao realizar agendamento. Tente novamente."
+  );
+
+} finally {
+
+  setLoading(false);
+}
   }
 
-  useEffect(() => {
-    carregarConfigAgenda();
-  }, []);
+
+
+   useEffect(() => {
+  carregarConfigAgenda();
+  carregarHorarios();
+}, []);
 
   return (
     <div className="modalOverlay">
@@ -516,7 +551,8 @@ setTimeout(() => {
 
 </div>
         <div className="horariosGrid">
-          {horarios.map((h) => {
+          {Array.isArray(horarios) &&
+          horarios.map((h) => {
             const ocupado =
               horariosOcupados.includes(
                 h
