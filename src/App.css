@@ -1242,3 +1242,117 @@ html {
     font-size: 32px;
   }
 }
+
+/* ==========================================================================
+   TELA DE LOGIN - PADRÃO CLEAN & PROFISSIONAL
+   ========================================================================== */
+
+.loginPage {
+  min-height: 100vh;
+  background: #f5f4f0; /* Fundo off-white unificado da marca */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.loginCard {
+  width: 100%;
+  max-width: 420px;
+  background: #ffffff;
+  border-radius: 34px;
+  padding: 42px 34px;
+  box-shadow: 0 30px 90px rgba(33, 21, 18, 0.05); /* Sombra suave em tom marrom */
+  border: 1px solid #e0ded7;
+  text-align: center; /* Centraliza os textos do card */
+}
+
+.loginLogo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #402e29; /* Marrom profundo elegante */
+  color: #ffffff;
+  padding: 10px 20px;
+  border-radius: 999px; /* Formato de cápsula para caber o nome completo */
+  margin-bottom: 24px;
+  box-shadow: 0 8px 20px rgba(64, 46, 41, 0.15);
+}
+
+.loginLogo span {
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.loginCard h1 {
+  margin: 0 0 10px 0;
+  font-size: 32px;
+  color: #211512;
+  font-weight: 800;
+}
+
+.loginCard p {
+  color: #5c504a;
+  line-height: 1.6;
+  font-size: 15px;
+  margin: 0 0 32px 0;
+}
+
+.loginCard form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.loginCard input {
+  width: 100%;
+  height: 54px;
+  border: 1px solid #e0ded7;
+  border-radius: 16px;
+  padding: 0 18px;
+  font-size: 15px;
+  outline: none;
+  background: #fafafa;
+  color: #211512;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.loginCard input:focus {
+  border-color: #402e29; /* Borda destaca no tom da marca ao clicar */
+  background: #ffffff;
+}
+
+.loginCard button {
+  width: 100%;
+  height: 54px;
+  border-radius: 16px;
+  background: #402e29;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  margin-top: 8px;
+}
+
+.loginCard button:hover:not(:disabled) {
+  background: #2b1e1a;
+}
+
+.loginCard button:disabled {
+  background: #9c928d;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.loginMessage {
+  background: #ffe1e1; /* Fundo de erro sutil */
+  border: 1px solid #c40000;
+  color: #c40000; /* Texto em vermelho vivo para o aviso ficar bem legível */
+  padding: 14px;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+}

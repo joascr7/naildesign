@@ -44,7 +44,7 @@ export default function Login() {
     <div className="loginPage">
       <div className="loginCard">
         <div className="loginLogo">
-          <span>N</span>
+          <span>Lais Eduarda</span>
         </div>
 
         <h1>Painel Admin</h1>
