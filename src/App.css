@@ -111,13 +111,54 @@ button:hover {
   display: flex;
 }
 
-.heroImage img {
-  width: 100%;
-  height: auto; /* Alinhamento dinâmico sem distorção */
-  object-fit: cover;
-  object-position: center;
+/* ==========================================================================
+   HERO IMAGE - CAIXA E BORDA 100% JUSTAS COM A FOTO (SEM SOBRAS)
+   ========================================================================== */
+
+.heroImage {
+  width: fit-content;      /* MÁGICA AQUI: A caixa pai assume a largura exata da foto */
+  max-width: 100%;         /* Impede que morda as laterais da tela no mobile */
+  height: auto;            /* Altura totalmente flexível */
+  min-height: 0;
+  
+  margin-left: auto;
+  margin-right: auto;
+  background: transparent; /* Remove fundos antigos para não vazar nada */
   border-radius: 34px;
+  overflow: hidden;
+  position: relative;
+  padding: 0;              /* Garante folga zero entre a foto e a borda */
+  
+  /* Mantém a sua borda e sombra chique coladas na foto */
+  border: 1px solid #e0ded7;
+  box-shadow: 0 24px 70px rgba(33, 21, 18, 0.08);
+  display: flex;
+}
+
+.heroImage img {
   display: block;
+  max-width: 100%;
+  
+  /* Controle de Altura: Defina aqui o limite que você quer (Ex: 380px) */
+  height: 580px;           
+  
+  /* Força a proporção real da foto sem nenhum corte */
+  object-fit: inline;      
+  width: auto;             /* Faz a largura acompanhar a proporção da altura */
+  border-radius: 34px;
+}
+
+/* Ajuste Responsivo para Mobile (Celulares) */
+@media (max-width: 768px) {
+  .heroImage {
+    border-radius: 26px;
+    width: fit-content;
+  }
+
+  .heroImage img {
+    height: 360px;         /* Altura menor no celular, mantendo a borda coladinha */
+    border-radius: 26px;
+  }
 }
 
 .heroFloatingCard {
