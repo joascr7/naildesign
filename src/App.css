@@ -426,19 +426,37 @@ button:hover {
    CORREÇÃO DO INPUT DE DATA DENTRO DO MODAL
    ========================================================================== */
 
+/* ==========================================================================
+   RESET COMPLETO DE INPUTS DO MODAL (INCLUINDO DATA NO IPHONE)
+   ========================================================================== */
+
 .modalBox input {
-  width: 100%;
+  width: 100% !important;
+  max-width: 100% !important;
   height: 48px;
-  border: 1px solid #e0ded7;
+  border: 1px solid #e0ded7 !important; /* Força a bordinha cinza em todos */
   border-radius: 14px;
   padding: 0 14px;
   margin-bottom: 12px;
   font-size: 15px;
   background: #fafafa;
+  display: block;
   
-  /* ESTAS DUAS LINHAS RESOLVEM O SEU PROBLEMA: */
-  box-sizing: border-box !important; /* Obriga TODOS os inputs, inclusive o de data, a calcularem o tamanho por dentro */
-  min-width: 0 !important;           /* Remove a largura mínima invisível que o navegador poe no calendário */
+  /* LINHAS MÁGICAS PARA O IPHONE (IOS): */
+  box-sizing: border-box !important;   /* Joga o padding para dentro */
+  min-width: 0 !important;             /* Mata a largura mínima do calendário */
+  appearance: none !important;         /* Remove o design padrão do iOS */
+  -webkit-appearance: none !important; /* Garante a remoção no Safari do iPhone */
+}
+
+/* Força o tipo date específico caso o Safari tente ignorar a regra acima */
+.modalBox input[type="date"] {
+  border: 1px solid #e0ded7 !important;
+  border-radius: 14px !important;
+  background-color: #fafafa !important;
+  box-sizing: border-box !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
 }
 
 /* ==========================================================================
