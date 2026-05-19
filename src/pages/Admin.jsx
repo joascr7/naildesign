@@ -49,6 +49,12 @@ export default function Admin() {
   const [servicos, setServicos] = useState([]);
   const [novoServico, setNovoServico] = useState(servicoVazio);
   const [mensagem, setMensagem] = useState("");
+  // 🔥 ESTADO
+const [grupoFinalizadosAberto, setGrupoFinalizadosAberto] =
+  useState(false);
+
+const [grupoCanceladosAberto, setGrupoCanceladosAberto] =
+  useState(false);
 
   const [configAgenda, setConfigAgenda] = useState({
     agendaAberta: true,
@@ -1016,75 +1022,125 @@ Assim conseguimos reservar seu horário exclusivamente para você. `
         ))}
       </div>
 
-      <h2 id="concluidos" className="adminTitle">
-  Agendamentos finalizados
-</h2>
+     {/* FINALIZADOS */}
+<div className="adminSection">
 
-<div className="adminGrid">
-  {concluidos.map((item) => (
-    <div
-      className="adminCard finished"
-      key={item.id}
-    >
-      <span className="statusBadge done">
-        CONCLUÍDO
+  <button
+    className="groupToggle"
+    onClick={() =>
+      setGrupoFinalizadosAberto(
+        !grupoFinalizadosAberto
+      )
+    }
+  >
+    <div>
+      <h2 className="adminTitle">
+        Agendamentos finalizados
+      </h2>
+
+      <span className="groupCount">
+        {concluidos.length} itens
       </span>
-
-      <h3>{item.clienteNome}</h3>
-
-      <p>{item.clienteTelefone}</p>
-
-      <p>{item.servicoNome}</p>
-
-      <p>
-        {item.data} às {item.horario}
-      </p>
-
-      <strong>
-        R$ {Number(item.valor || 0).toFixed(2)}
-      </strong>
     </div>
-  ))}
+
+    <span className="groupArrow">
+      {grupoFinalizadosAberto ? "−" : "+"}
+    </span>
+  </button>
+
+  {grupoFinalizadosAberto && (
+    <div className="adminGrid">
+      {concluidos.map((item) => (
+        <div
+          className="adminCard finished"
+          key={item.id}
+        >
+          <span className="statusBadge done">
+            CONCLUÍDO
+          </span>
+
+          <h3>{item.clienteNome}</h3>
+
+          <p>{item.clienteTelefone}</p>
+
+          <p>{item.servicoNome}</p>
+
+          <p>
+            {item.data} às {item.horario}
+          </p>
+
+          <strong>
+            R$ {Number(item.valor || 0).toFixed(2)}
+          </strong>
+        </div>
+      ))}
+    </div>
+  )}
 </div>
 
-<h2 id="cancelados" className="adminTitle">
-  Agendamentos cancelados
-</h2>
+{/* CANCELADOS */}
+<div className="adminSection">
 
-<div className="adminGrid">
-  {cancelados.map((item) => (
-    <div
-      className="adminCard cancelled"
-      key={item.id}
-    >
-      <span className="statusBadge cancel">
-        CANCELADO
+  <button
+    className="groupToggle"
+    onClick={() =>
+      setGrupoCanceladosAberto(
+        !grupoCanceladosAberto
+      )
+    }
+  >
+    <div>
+      <h2 className="adminTitle">
+        Agendamentos cancelados
+      </h2>
+
+      <span className="groupCount">
+        {cancelados.length} itens
       </span>
-
-      <h3>{item.clienteNome}</h3>
-
-      <p>{item.clienteTelefone}</p>
-
-      <p>{item.servicoNome}</p>
-
-      <p>
-        {item.data} às {item.horario}
-      </p>
-
-      <strong>
-  R$ {Number(item.valor || 0).toFixed(2)}
-</strong>
-
-<button
-  className="deleteBtn"
-  onClick={() =>
-    excluirAgendamento(item.id)
-  }
->
-  Excluir
-</button>
     </div>
-  ))}
+
+    <span className="groupArrow">
+      {grupoCanceladosAberto ? "−" : "+"}
+    </span>
+  </button>
+
+  {grupoCanceladosAberto && (
+    <div className="adminGrid">
+      {cancelados.map((item) => (
+        <div
+          className="adminCard cancelled"
+          key={item.id}
+        >
+          <span className="statusBadge cancel">
+            CANCELADO
+          </span>
+
+          <h3>{item.clienteNome}</h3>
+
+          <p>{item.clienteTelefone}</p>
+
+          <p>{item.servicoNome}</p>
+
+          <p>
+            {item.data} às {item.horario}
+          </p>
+
+          <strong>
+            R$ {Number(item.valor || 0).toFixed(2)}
+          </strong>
+
+          <button
+            className="deleteBtn"
+            onClick={() =>
+              excluirAgendamento(item.id)
+            }
+          >
+            Excluir
+          </button>
+        </div>
+      ))}
+    </div>
+  )}
 </div>
 
       <h2 id="servicosAdmin" className="adminTitle">
