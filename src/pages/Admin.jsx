@@ -128,6 +128,34 @@ const [grupoCanceladosAberto, setGrupoCanceladosAberto] =
   }
 }
 
+async function excluirServico(id) {
+  const confirmar = window.confirm(
+    "Deseja excluir este serviço?"
+  );
+
+  if (!confirmar) return;
+
+  try {
+    await deleteDoc(
+      doc(db, "servicos", id)
+    );
+
+    setMensagem(
+      "Serviço removido com sucesso."
+    );
+
+    await carregarServicos();
+
+  } catch (error) {
+
+    console.log(error);
+
+    setMensagem(
+      "Erro ao excluir serviço."
+    );
+  }
+}
+
   async function carregarServicos() {
     const snap = await getDocs(collection(db, "servicos"));
 
@@ -300,25 +328,54 @@ const [grupoCanceladosAberto, setGrupoCanceladosAberto] =
   }
 
   async function salvarServico(servico) {
-    setMensagem("Salvando serviço...");
 
-    try {
-      await updateDoc(doc(db, "servicos", servico.id), {
+  try {
+
+    await updateDoc(
+      doc(db, "servicos", servico.id),
+      {
         nome: String(servico.nome || ""),
-        descricao: String(servico.descricao || ""),
-        preco: Number(servico.preco || 0),
-        precoPromocional: Number(servico.precoPromocional || 0),
-        promocaoAtiva: servico.promocaoAtiva === true,
-        imagemUrl: String(servico.imagemUrl || ""),
-        ativo: servico.ativo === true
-      });
+        descricao: String(
+          servico.descricao || ""
+        ),
 
-      setMensagem("Serviço atualizado com sucesso.");
-      await carregarServicos();
-    } catch (error) {
-      setMensagem(`Erro ao salvar serviço: ${error.message}`);
-    }
+        preco: Number(
+          servico.preco || 0
+        ),
+
+        precoPromocional: Number(
+          servico.precoPromocional || 0
+        ),
+
+        promocaoAtiva:
+          servico.promocaoAtiva === true,
+
+        imagemUrl: String(
+          servico.imagemUrl || ""
+        ),
+
+        ativo:
+          servico.ativo === true
+      }
+    );
+
+    setMensagem(
+      `Serviço "${servico.nome}" salvo com sucesso.`
+    );
+
+    setTimeout(() => {
+      setMensagem("");
+    }, 2500);
+
+  } catch (error) {
+
+    console.log(error);
+
+    setMensagem(
+      "Erro ao salvar serviço."
+    );
   }
+}
 
   async function criarServico() {
     setMensagem("Criando serviço...");
@@ -427,33 +484,77 @@ const [grupoCanceladosAberto, setGrupoCanceladosAberto] =
     }
   }
 
-  async function salvarGaleria(item) {
-    setMensagem("Salvando foto...");
+ async function salvarGaleria(item) {
+  try {
 
-    try {
-      await updateDoc(doc(db, "galeria", item.id), {
-        titulo: item.titulo || "",
-        descricao: item.descricao || "",
-        imagemUrl: item.imagemUrl || "",
+    // feedback instantâneo
+    setMensagem(`Salvando "${item.titulo || "foto"}"...`);
+
+    // salva SOMENTE o item alterado
+    await updateDoc(
+      doc(db, "galeria", item.id),
+      {
+        titulo: String(item.titulo || ""),
+        descricao: String(item.descricao || ""),
+        imagemUrl: String(item.imagemUrl || ""),
         ativo: item.ativo === true
-      });
+      }
+    );
 
-      setMensagem("Foto salva com sucesso.");
-      await carregarGaleria();
-    } catch (error) {
-      setMensagem(`Erro ao salvar foto: ${error.message}`);
-    }
+    // NÃO recarrega toda galeria
+    // await carregarGaleria();
+
+    setMensagem("Foto salva com sucesso.");
+
+    // limpa mensagem depois
+    setTimeout(() => {
+      setMensagem("");
+    }, 2500);
+
+  } catch (error) {
+
+    console.log(error);
+
+    setMensagem(
+      `Erro ao salvar foto: ${error.message}`
+    );
   }
+}
 
   async function removerGaleria(id) {
-    try {
-      await deleteDoc(doc(db, "galeria", id));
-      setMensagem("Foto removida da galeria.");
-      await carregarGaleria();
-    } catch (error) {
-      setMensagem(`Erro ao remover foto: ${error.message}`);
-    }
+
+  const confirmar = window.confirm(
+    "Deseja remover esta foto?"
+  );
+
+  if (!confirmar) return;
+
+  try {
+
+    await deleteDoc(
+      doc(db, "galeria", id)
+    );
+
+    // remove da tela sem reload
+    setGaleria((atual) =>
+      atual.filter((item) => item.id !== id)
+    );
+
+    setMensagem("Foto removida.");
+
+    setTimeout(() => {
+      setMensagem("");
+    }, 2500);
+
+  } catch (error) {
+
+    console.log(error);
+
+    setMensagem(
+      `Erro ao remover foto: ${error.message}`
+    );
   }
+}
 
   async function alterarStatus(id, status) {
     try {
@@ -1072,6 +1173,15 @@ Assim conseguimos reservar seu horário exclusivamente para você. `
           <strong>
             R$ {Number(item.valor || 0).toFixed(2)}
           </strong>
+
+          <button
+            className="deleteBtn"
+            onClick={() =>
+              excluirAgendamento(item.id)
+            }
+          >
+            Excluir
+          </button>
         </div>
       ))}
     </div>
@@ -1286,9 +1396,60 @@ Assim conseguimos reservar seu horário exclusivamente para você. `
               Serviço ativo
             </label>
 
-            <button type="button" onClick={() => salvarServico(servico)}>
-              Salvar alterações
-            </button>
+           <div
+  style={{
+    display: "flex",
+    gap: 10,
+    marginTop: 12
+  }}
+>
+
+  <button
+    type="button"
+    onClick={() =>
+      salvarServico(servico)
+    }
+    style={{
+      flex: 1,
+
+      border: "none",
+      height: 46,
+
+      borderRadius: 14,
+
+      background:
+        "linear-gradient(135deg,#ea1d2c,#ff4d5e)",
+
+      color: "#fff",
+
+      fontWeight: 800,
+      fontSize: 14,
+
+      cursor: "pointer",
+
+      boxShadow:
+        "0 10px 20px rgba(234,29,44,0.20)"
+    }}
+  >
+    Salvar
+  </button>
+
+  <button
+    type="button"
+    onClick={() =>
+      excluirServico(servico.id)
+    }
+    className="dangerFullBtn"
+    style={{
+      flex: 1,
+      height: 46,
+      borderRadius: 14
+    }}
+  >
+    Excluir
+  </button>
+
+</div>
           </div>
         ))}
       </div>
