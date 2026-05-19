@@ -657,10 +657,36 @@ button:hover {
   width: fit-content;
 }
 
+/* ==========================================================================
+   CARDS MAIS ESTREITOS E MAIS ALTOS (ADMIN & GALERIA)
+   ========================================================================== */
+
+/* 1. Ajuste no Grid para diminuir a largura dos cards no Desktop (passando para 4 colunas) */
+.servicesGrid,
+.adminGrid,
+.servicesAdminGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* Aumentou de 3 para 4 colunas: os cards ficam mais finos */
+  gap: 24px;
+}
+
+/* 2. Imagens dos Cards - Largura total do card e altura ampliada */
+.serviceAdminCard img, 
+.galleryCard img {
+  width: 100%;
+  height: 280px; /* Aumentado de 180px para 280px (Fica mais alto e vertical) */
+  max-height: 320px;
+  object-fit: cover; /* Mantém o corte perfeito sem distorcer o trabalho das unhas */
+  border-radius: 14px;
+  background: #f5f4f0;
+  display: block;
+}
+
+/* 3. Ajuste do Preview do Topo (Apenas para acompanhar a tendência mais alta) */
 .imagePreview {
   width: 100%;
-  height: 200px; /* Altura máxima controlada para não esticar no desktop */
-  max-height: 220px;
+  height: 240px; /* Aumentado ligeiramente para harmonizar */
+  max-height: 260px;
   background: #ffffff;
   border-radius: 18px;
   overflow: hidden;
@@ -676,38 +702,36 @@ button:hover {
 .imagePreview img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Recorta a imagem proporcionalmente sem distorcer ou esticar */
+  object-fit: cover;
   object-position: center;
 }
 
-/* 2. Imagens dos Cards de Serviços / Galeria no Admin */
-.serviceAdminCard img, 
-.galleryCard img {
-  width: 100%;
-  height: 180px; /* Reduzido de 220px para um tamanho mais controlado e elegante */
-  max-height: 200px;
-  object-fit: cover; /* Garante que a foto preencha o espaço sem ficar gigante */
-  border-radius: 14px;
-  background: #f5f4f0;
-  display: block;
+/* 4. Ajuste Responsivo para Mobile (Celulares) */
+@media (max-width: 1024px) {
+  /* Em telas médias/tablets, cai para 2 colunas para não esmagar */
+  .servicesGrid,
+  .adminGrid,
+  .servicesAdminGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
-/* 3. Ajuste Responsivo para Mobile (Celulares) */
 @media (max-width: 768px) {
   .imagePreview {
-    height: 140px; /* No celular, o preview do topo fica mais compacto */
+    height: 160px;
   }
 
+  /* No celular, os cards ocupam a largura da tela, mas mantemos a proporção mais alta */
   .serviceAdminCard img, 
   .galleryCard img {
-    height: 160px; /* Evita que a imagem ocupe a tela inteira do celular */
+    height: 240px; /* Altura ideal para telas de celular sem sumir com os botões */
   }
   
-  /* Garante que o grid do admin não quebre e esmague os elementos */
-  .servicesAdminGrid, 
-  .adminGrid {
-    grid-template-columns: 1fr;
-    gap: 16px;
+  .servicesGrid,
+  .adminGrid,
+  .servicesAdminGrid {
+    grid-template-columns: 1fr; /* 1 card por linha no celular */
+    gap: 20px;
   }
 }
 
@@ -1178,22 +1202,40 @@ html {
   gap: 22px;
 }
 
-.galleryCard {
-  background: #f5f4f0;
-  border-radius: 26px;
-  overflow: hidden;
-  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.04);
-  border: 1px solid #e0ded7;
+/* ==========================================================================
+   GALERIA PRINCIPAL - CARDS MAIS ESTREITOS E MAIS ALTOS
+   ========================================================================== */
+
+/* 1. Ajuste no Grid da Galeria para diminuir a largura dos cards (4 colunas) */
+.galleryGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* Divisão em 4 colunas deixa o card mais fino */
+  gap: 24px;
 }
 
+.galleryCard {
+  background: #ffffff; /* Fundo branco para contrastar com o fundo cinza da seção */
+  border-radius: 26px;
+  overflow: hidden;
+  box-shadow: 0 10px 35px rgba(33, 21, 18, 0.04);
+  border: 1px solid #e0ded7;
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* Garante que todos os cards tenham exatamente o mesmo tamanho */
+}
+
+/* 2. Aumento de altura da imagem para criar o efeito vertical */
 .galleryCard img {
   width: 100%;
-  height: 280px;
-  object-fit: cover;
+  height: 280px; /* Aumentado para ficar mais alto e proporcional */
+  object-fit: cover; /* Corta as laterais da foto sem distorcer o formato das unhas */
+  display: block;
 }
 
 .galleryCard div {
-  padding: 18px;
+  padding: 20px;
+  background: #ffffff;
+  flex-grow: 1; /* Faz a área de texto preencher o fundo caso falte espaço */
 }
 
 .galleryCard strong {
@@ -1201,11 +1243,32 @@ html {
   color: #211512;
   font-size: 18px;
   margin-bottom: 6px;
+  font-weight: 700;
 }
 
 .galleryCard span {
   color: #5c504a;
   font-size: 14px;
+  line-height: 1.4;
+}
+
+/* 3. Ajustes Responsivos para Tablets e Celulares */
+@media (max-width: 1024px) {
+  .galleryGrid {
+    grid-template-columns: repeat(2, 1fr); /* 2 colunas em tablets para não esmagar */
+    gap: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .galleryGrid {
+    grid-template-columns: 1fr; /* 1 colunagem no celular ocupando a largura da tela */
+    gap: 20px;
+  }
+
+  .galleryCard img {
+    height: 250px; /* Altura ligeiramente menor no celular para manter a harmonia na tela */
+  }
 }
 
 .contactSection {
