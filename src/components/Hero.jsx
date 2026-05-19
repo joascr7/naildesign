@@ -38,7 +38,7 @@ export default function Hero({ onAgendar, config = {} }) {
 
         <div className="heroFloatingCard">
           <strong>Atendimento premium </strong>
-          <span>Alongamento e esmaltação.</span>
+          <span>Lais Eduarda</span>
         </div>
       </div>
     </section>

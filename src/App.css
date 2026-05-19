@@ -59,6 +59,7 @@ button {
   font-weight: 800;
   cursor: pointer;
   transition: background 0.2s;
+  max-width: 100%; /* Evita estouro global de botões */
 }
 
 button:hover {
@@ -365,17 +366,36 @@ button:hover {
   background: #fafafa;
 }
 
+/* ==========================================================================
+   GRID DE HORÁRIOS - CORREÇÃO PARA NÃO VAZAR DA TELA (MOBILE)
+   ========================================================================== */
+
 .horariosGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  gap: 8px; /* Reduzido de 10px para 8px para ganhar espaço no mobile */
   margin: 12px 0 18px;
+  width: 100%;
+  max-width: 100%;
 }
 
 .horariosGrid button {
   background: #f5f4f0;
   color: #211512;
   border: 1px solid #e0ded7;
+  
+  /* CORREÇÕES CRUCIAIS: */
+  padding: 12px 4px !important; /* Diminui o padding lateral para o texto caber dentro */
+  font-size: 13px !important;    /* Garante um tamanho de fonte legível e controlado */
+  min-width: 0 !important;       /* Permite que o botão encolha junto com a coluna do grid */
+  width: 100%;
+  height: 48px;                  /* Altura fixa para todos os botões ficarem alinhados */
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  word-break: break-word;        /* Se o texto for muito grande, ele quebra a linha em vez de vazar */
 }
 
 .confirmBtn {
@@ -390,10 +410,26 @@ button:hover {
 }
 
 .horariosGrid button.indisponivel {
-  background: #eee;
-  color: #999;
-  border-color: #ddd;
+  background: #eeeeee;
+  color: #a39891; /* Tom de marrom cinzento apagado para harmonizar com o site */
+  border-color: #e0ded7;
   cursor: not-allowed;
+  opacity: 0.6;   /* Deixa o botão visualmente "desativado" e discreto */
+  
+  /* Garante que o estado desativado siga as mesmas travas de tamanho */
+  min-width: 0 !important;
+  max-width: 100%;
+}
+
+/* Ajuste fino para celulares muito pequenos (iPhone SE / telas < 360px) */
+@media (max-width: 360px) {
+  .horariosGrid {
+    gap: 6px;
+  }
+  .horariosGrid button {
+    font-size: 11px !important;
+    padding: 8px 2px !important;
+  }
 }
 
 .modalMessage {
@@ -437,6 +473,7 @@ button:hover {
   flex-direction: column;
   gap: 8px;
   border: 1px solid #e0ded7;
+  width: 100%; /* Garante confinamento em layouts menores */
 }
 
 .adminCard strong {
@@ -446,6 +483,7 @@ button:hover {
 
 .adminCard span {
   color: #5c504a;
+  word-break: break-all; /* Evita que telefones compridos quebrem o card */
 }
 
 .adminCard p {
@@ -461,7 +499,7 @@ button:hover {
 
 @media (max-width: 768px) {
   .adminPage {
-    padding: 22px;
+    padding: 20px 12px; /* Diminui recuo lateral no mobile */
   }
   .adminGrid {
     grid-template-columns: 1fr;
@@ -519,10 +557,19 @@ button:hover {
   color: #c40000;
 }
 
+/* Correção de estouro dos botões internos do card admin */
 .adminActions {
   display: flex;
+  flex-direction: column; /* Em vez de linha, empilha no mobile nativamente */
   gap: 10px;
   margin-top: 16px;
+  width: 100%;
+}
+
+.adminActions button {
+  width: 100% !important; /* Força todos os botões do card a ocuparem a largura total */
+  min-width: 0 !important; /* Remove travas antigas que estouravam a caixa */
+  margin: 0 !important;
 }
 
 .successBtn {
@@ -536,6 +583,7 @@ button:hover {
 @media (max-width: 768px) {
   .statsGrid {
     grid-template-columns: 1fr;
+    width: 100%;
   }
 }
 
@@ -559,6 +607,7 @@ button:hover {
   flex-direction: column;
   gap: 12px;
   border: 1px solid #e0ded7;
+  width: 100%;
 }
 
 .serviceAdminCard img {
@@ -587,7 +636,7 @@ button:hover {
 }
 
 /* ==========================================================================
-   CORREÇÃO DO BOTÃO WHATSAPP (DESTACADO E VIVO NO FINAL DA PÁGINA)
+   BOTÃO WHATSAPP CORRIGIDO
    ========================================================================== */
 .whatsappBtn {
   background: #25d366 !important;
@@ -598,11 +647,6 @@ button:hover {
 
 .whatsappBtn:hover {
   background: #20ba59 !important;
-}
-
-.adminActions button {
-  flex: 1;
-  min-width: 130px;
 }
 
 .checkLine {
@@ -628,13 +672,6 @@ button:hover {
 }
 
 @media (max-width: 768px) {
-  .adminActions {
-    flex-direction: column;
-  }
-  .adminActions button {
-    width: 100%;
-    min-width: 0;
-  }
   .checkLine {
     font-size: 14px;
   }
@@ -654,38 +691,36 @@ button:hover {
   border-radius: 16px;
   font-weight: 800;
   margin-bottom: 20px;
-  width: fit-content;
+  width: 100%; /* Ocupa largura total no mobile com segurança */
+  max-width: 100%;
 }
 
 /* ==========================================================================
    CARDS MAIS ESTREITOS E MAIS ALTOS (ADMIN & GALERIA)
    ========================================================================== */
 
-/* 1. Ajuste no Grid para diminuir a largura dos cards no Desktop (passando para 4 colunas) */
 .servicesGrid,
 .adminGrid,
 .servicesAdminGrid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* Aumentou de 3 para 4 colunas: os cards ficam mais finos */
+  grid-template-columns: repeat(4, 1fr); 
   gap: 24px;
 }
 
-/* 2. Imagens dos Cards - Largura total do card e altura ampliada */
 .serviceAdminCard img, 
 .galleryCard img {
   width: 100%;
-  height: 280px; /* Aumentado de 180px para 280px (Fica mais alto e vertical) */
+  height: 280px; 
   max-height: 320px;
-  object-fit: cover; /* Mantém o corte perfeito sem distorcer o trabalho das unhas */
+  object-fit: cover; 
   border-radius: 14px;
   background: #f5f4f0;
   display: block;
 }
 
-/* 3. Ajuste do Preview do Topo (Apenas para acompanhar a tendência mais alta) */
 .imagePreview {
   width: 100%;
-  height: 240px; /* Aumentado ligeiramente para harmonizar */
+  height: 240px; 
   max-height: 260px;
   background: #ffffff;
   border-radius: 18px;
@@ -706,9 +741,7 @@ button:hover {
   object-position: center;
 }
 
-/* 4. Ajuste Responsivo para Mobile (Celulares) */
 @media (max-width: 1024px) {
-  /* Em telas médias/tablets, cai para 2 colunas para não esmagar */
   .servicesGrid,
   .adminGrid,
   .servicesAdminGrid {
@@ -721,16 +754,15 @@ button:hover {
     height: 160px;
   }
 
-  /* No celular, os cards ocupam a largura da tela, mas mantemos a proporção mais alta */
   .serviceAdminCard img, 
   .galleryCard img {
-    height: 240px; /* Altura ideal para telas de celular sem sumir com os botões */
+    height: 240px; 
   }
   
   .servicesGrid,
   .adminGrid,
   .servicesAdminGrid {
-    grid-template-columns: 1fr; /* 1 card por linha no celular */
+    grid-template-columns: 1fr; 
     gap: 20px;
   }
 }
@@ -744,6 +776,7 @@ button:hover {
   text-align: center;
   font-weight: 800;
   cursor: pointer;
+  width: 100%; /* Força confinamento dentro do container pai */
 }
 
 .uploadBox input {
@@ -776,6 +809,7 @@ button:hover {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 16px;
 }
 
 .adminTopBar h1 {
@@ -800,23 +834,22 @@ button:hover {
 .storeClosed {
   display: inline-flex;
   align-items: center;
-  gap: 8px; /* Espaço entre a bolinha e o texto */
+  gap: 8px; 
   padding: 6px 14px;
-  border-radius: 999px; /* Formato de cápsula perfeito */
+  border-radius: 999px; 
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.5px;
-  text-transform: uppercase; /* Deixa o texto limpo e padronizado */
+  text-transform: uppercase; 
+  white-space: nowrap; /* Evita quebra feia da tag de status */
 }
 
-/* Estado: Aberto */
 .storeOpen {
-  background: rgba(8, 122, 53, 0.08); /* Fundo verde ultra suave e transparente */
-  color: #087a35; /* Verde firme para leitura */
+  background: rgba(8, 122, 53, 0.08); 
+  color: #087a35; 
   border: 1px solid rgba(8, 122, 53, 0.15);
 }
 
-/* Bolinha verde de status */
 .storeOpen::before {
   content: "";
   width: 8px;
@@ -826,14 +859,12 @@ button:hover {
   display: inline-block;
 }
 
-/* Estado: Fechado */
 .storeClosed {
-  background: rgba(196, 0, 0, 0.06); /* Fundo vermelho ultra suave */
-  color: #c40000; /* Vermelho corporativo elegante */
+  background: rgba(196, 0, 0, 0.06); 
+  color: #c40000; 
   border: 1px solid rgba(196, 0, 0, 0.12);
 }
 
-/* Bolinha vermelha de status */
 .storeClosed::before {
   content: "";
   width: 8px;
@@ -866,6 +897,7 @@ button:hover {
   flex-direction: column;
   gap: 12px;
   border: 1px solid #e0ded7;
+  width: 100%;
 }
 
 .agendaControlCard h3 {
@@ -893,6 +925,7 @@ button:hover {
   margin-top: 4px;
 }
 
+/* Correção para o switch do admin não esmagar no mobile */
 .switchLine {
   display: flex;
   gap: 14px;
@@ -901,11 +934,13 @@ button:hover {
   background: #fafafa;
   border-radius: 18px;
   border: 1px solid #e0ded7;
+  width: 100%;
 }
 
 .switchLine input {
   width: 22px;
   height: 22px;
+  flex-shrink: 0; /* Impede o checkbox de virar um traço esmagado */
 }
 
 .switchLine strong {
@@ -936,6 +971,7 @@ button:hover {
   align-items: center;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.03);
   border: 1px solid #e0ded7;
+  width: 100%;
 }
 
 .bloqueioItem strong {
@@ -952,18 +988,29 @@ button:hover {
 .bloqueioItem button {
   background: #c40000;
   padding: 10px 14px;
+  flex-shrink: 0;
 }
 
 @media (max-width: 768px) {
   .adminTopBar {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch; /* Ocupa as laterais perfeitamente */
     gap: 16px;
     border-radius: 24px;
-    padding: 24px;
+    padding: 24px 20px;
   }
   .adminTopBar h1 {
     font-size: 30px;
+  }
+  .adminTopBar .adminTopActions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+  }
+  .adminTopBar .adminTopActions button {
+    margin: 0;
   }
   .premiumStats,
   .agendaControlGrid {
@@ -972,6 +1019,10 @@ button:hover {
   .bloqueioItem {
     flex-direction: column;
     align-items: flex-start;
+    gap: 14px;
+  }
+  .bloqueioItem button {
+    width: 100%;
   }
 }
 
@@ -1137,6 +1188,7 @@ html {
   display: none;
 }
 
+/* Correção da barra de rolagem e do menu administrativo no mobile */
 .adminMenu {
   position: sticky;
   top: 12px;
@@ -1152,6 +1204,7 @@ html {
   border: 1px solid #e0ded7;
   border-radius: 22px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+  width: 100%;
 }
 
 .adminMenu a {
@@ -1173,9 +1226,10 @@ html {
 
 @media (max-width: 768px) {
   .adminMenu {
-    margin-left: -4px;
-    margin-right: -4px;
+    margin-left: 0;
+    margin-right: 0;
     border-radius: 18px;
+    padding: 10px;
   }
   .adminMenu a {
     font-size: 12px;
@@ -1198,44 +1252,32 @@ html {
 
 .galleryGrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 22px;
-}
-
-/* ==========================================================================
-   GALERIA PRINCIPAL - CARDS MAIS ESTREITOS E MAIS ALTOS
-   ========================================================================== */
-
-/* 1. Ajuste no Grid da Galeria para diminuir a largura dos cards (4 colunas) */
-.galleryGrid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr); /* Divisão em 4 colunas deixa o card mais fino */
+  grid-template-columns: repeat(4, 1fr); 
   gap: 24px;
 }
 
 .galleryCard {
-  background: #ffffff; /* Fundo branco para contrastar com o fundo cinza da seção */
+  background: #ffffff; 
   border-radius: 26px;
   overflow: hidden;
   box-shadow: 0 10px 35px rgba(33, 21, 18, 0.04);
   border: 1px solid #e0ded7;
   display: flex;
   flex-direction: column;
-  height: 100%; /* Garante que todos os cards tenham exatamente o mesmo tamanho */
+  height: 100%; 
 }
 
-/* 2. Aumento de altura da imagem para criar o efeito vertical */
 .galleryCard img {
   width: 100%;
-  height: 280px; /* Aumentado para ficar mais alto e proporcional */
-  object-fit: cover; /* Corta as laterais da foto sem distorcer o formato das unhas */
+  height: 280px; 
+  object-fit: cover; 
   display: block;
 }
 
 .galleryCard div {
   padding: 20px;
   background: #ffffff;
-  flex-grow: 1; /* Faz a área de texto preencher o fundo caso falte espaço */
+  flex-grow: 1; 
 }
 
 .galleryCard strong {
@@ -1252,22 +1294,21 @@ html {
   line-height: 1.4;
 }
 
-/* 3. Ajustes Responsivos para Tablets e Celulares */
 @media (max-width: 1024px) {
   .galleryGrid {
-    grid-template-columns: repeat(2, 1fr); /* 2 colunas em tablets para não esmagar */
+    grid-template-columns: repeat(2, 1fr); 
     gap: 20px;
   }
 }
 
 @media (max-width: 768px) {
   .galleryGrid {
-    grid-template-columns: 1fr; /* 1 colunagem no celular ocupando a largura da tela */
+    grid-template-columns: 1fr; 
     gap: 20px;
   }
 
   .galleryCard img {
-    height: 250px; /* Altura ligeiramente menor no celular para manter a harmonia na tela */
+    height: 250px; 
   }
 }
 
@@ -1301,7 +1342,6 @@ html {
 
 .contactBox p {
   line-height: 1.6;
-  
 }
 
 .contactInfo {
@@ -1310,6 +1350,7 @@ html {
   border-radius: 24px;
   padding: 24px;
   border: 1px solid #e0ded7;
+  width: 100%;
 }
 
 .contactInfo a {
@@ -1321,12 +1362,13 @@ html {
   border-radius: 14px;
   font-weight: 900;
   margin-top: 12px;
+  max-width: 100%;
 }
 
 @media (max-width: 768px) {
   .gallerySection,
   .contactSection {
-    padding: 60px 18px;
+    padding: 60px 14px;
   }
   .galleryGrid,
   .contactBox {
@@ -1336,7 +1378,8 @@ html {
     height: 240px;
   }
   .contactBox {
-    padding: 28px;
+    padding: 24px 16px;
+    gap: 20px;
   }
   .contactBox h2 {
     font-size: 32px;
@@ -1344,12 +1387,12 @@ html {
 }
 
 /* ==========================================================================
-   TELA DE LOGIN - PADRÃO CLEAN & PROFISSIONAL
+   TELA DE LOGIN
    ========================================================================== */
 
 .loginPage {
   min-height: 100vh;
-  background: #f5f4f0; /* Fundo off-white unificado da marca */
+  background: #f5f4f0; 
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1362,19 +1405,19 @@ html {
   background: #ffffff;
   border-radius: 34px;
   padding: 42px 34px;
-  box-shadow: 0 30px 90px rgba(33, 21, 18, 0.05); /* Sombra suave em tom marrom */
+  box-shadow: 0 30px 90px rgba(33, 21, 18, 0.05); 
   border: 1px solid #e0ded7;
-  text-align: center; /* Centraliza os textos do card */
+  text-align: center; 
 }
 
 .loginLogo {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: #402e29; /* Marrom profundo elegante */
+  background: #402e29; 
   color: #ffffff;
   padding: 10px 20px;
-  border-radius: 999px; /* Formato de cápsula para caber o nome completo */
+  border-radius: 999px; 
   margin-bottom: 24px;
   box-shadow: 0 8px 20px rgba(64, 46, 41, 0.15);
 }
@@ -1420,7 +1463,7 @@ html {
 }
 
 .loginCard input:focus {
-  border-color: #402e29; /* Borda destaca no tom da marca ao clicar */
+  border-color: #402e29; 
   background: #ffffff;
 }
 
@@ -1447,9 +1490,9 @@ html {
 }
 
 .loginMessage {
-  background: #ffe1e1; /* Fundo de erro sutil */
+  background: #ffe1e1; 
   border: 1px solid #c40000;
-  color: #c40000; /* Texto em vermelho vivo para o aviso ficar bem legível */
+  color: #c40000; 
   padding: 14px;
   border-radius: 14px;
   font-size: 14px;
@@ -1459,28 +1502,53 @@ html {
 
 .adminSection {
   margin-bottom: 26px;
+  width: 100%;
+}
+
+/* ==========================================================================
+   ELEMENTOS DE AGRUPAMENTO DE CLIENTES CORRIGIDOS PARA MOBILE
+   ========================================================================== */
+
+.customerGroupCard {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Correção para o cabeçalho do grupo não quebrar ou vazar no celular */
+.customerGroupCard > div:first-child {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+@media (max-width: 480px) {
+  .customerGroupCard > div:first-child {
+    flex-direction: column; /* Empilha o nome e o faturamento em celulares minúsculos */
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .customerGroupCard > div:first-child > div:last-child {
+    text-align: left !important;
+  }
 }
 
 .groupToggle {
   width: 100%;
-
   border: none;
   background: #fff;
-
   border-radius: 18px;
-
   padding: 18px 20px;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   cursor: pointer;
-
-  box-shadow:
-    0 8px 24px rgba(0,0,0,0.06);
-
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
   transition: 0.2s ease;
+  gap: 12px;
 }
 
 .groupToggle:hover {
@@ -1489,39 +1557,40 @@ html {
 
 .groupToggle h2 {
   margin: 0;
+  font-size: 20px;
+  text-align: left;
+}
+
+@media (max-width: 768px) {
+  .groupToggle {
+    padding: 14px 16px;
+  }
+  .groupToggle h2 {
+    font-size: 16px;
+  }
 }
 
 .groupCount {
   display: inline-flex;
-
   margin-top: 6px;
-
   font-size: 13px;
   font-weight: 700;
-
-  color: #666;
-
-  background: #f5f5f5;
-
+  color: #6b5d57;
+  background: #f5f4f0;
   padding: 6px 10px;
-
   border-radius: 999px;
 }
 
 .groupArrow {
   width: 38px;
   height: 38px;
-
   border-radius: 12px;
-
-  background: #f5f5f5;
-
+  background: #f5f4f0;
   display: flex;
   align-items: center;
   justify-content: center;
-
   font-size: 22px;
   font-weight: 700;
-
-  color: #111;
+  color: #211512;
+  flex-shrink: 0;
 }
