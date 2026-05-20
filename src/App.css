@@ -1009,17 +1009,36 @@ button:hover {
   color: #211512;
 }
 
+/* ==========================================================================
+   FORMULÁRIOS DO ADMIN - CORREÇÃO DE LARGURA COMPLETA PARA MOBILE
+   ========================================================================== */
+
 .agendaControlCard input,
 .agendaControlCard textarea,
 .premiumForm input,
 .premiumForm textarea {
-  width: 100%;
+  width: 100% !important;
+  max-width: 100% !important; /* Impede qualquer expansão forçada */
+  height: auto;
   border: 1px solid #e0ded7;
   border-radius: 16px;
   padding: 14px;
   font-size: 14px;
   outline: none;
   background: #fafafa;
+  color: #211512;
+  display: block;
+
+  /* AS LINHAS QUE MATAM O BUG: */
+  box-sizing: border-box !important; /* Força o padding a ficar preso do lado de dentro */
+  min-width: 0 !important;           /* Zera restrições fantasmas de tamanho do navegador */
+}
+
+/* Ajuste específico para a Textarea não bugar no arrastar do mobile */
+.agendaControlCard textarea,
+.premiumForm textarea {
+  resize: vertical; /* Permite esticar apenas para baixo, nunca para os lados */
+  min-height: 80px;
 }
 
 .formLabel {
