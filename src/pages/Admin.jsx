@@ -751,32 +751,36 @@ async function excluirServico(id) {
 
 
   function chamarClienteWhatsApp(item) {
+  // Remove qualquer caractere que não seja número do telefone
   const telefone = String(item.clienteTelefone || "").replace(/\D/g, "");
 
-  const texto = encodeURIComponent(
-  `Olá ${item.clienteNome}, tudo bem? 
+  // MÁGICA AQUI: Converte a data de AAAA-MM-DD para DD/MM/AAAA
+  const dataBrasil = item.data && item.data.includes("-") 
+    ? item.data.split("-").reverse().join("/") 
+    : item.data;
 
-Aqui é Lays Nails Designer sobre seu agendamento.
+  // Formata o valor para o padrão de dinheiro do Brasil (Ex: R$ 80,00)
+  const valorFormatado = item.valor 
+    ? Number(item.valor).toFixed(2).replace(".", ",") 
+    : "0,00";
+
+  // Mensagem premium atualizada (sem a cobrança dos 40%)
+  const texto = encodeURIComponent(
+`Olá ${item.clienteNome}, tudo bem? 
+
+Aqui é a Lays Nails Designer. É um prazer imenso receber você! Seu horário já está confirmado com muito carinho em nossa agenda:
 
  Serviço: ${item.servicoNome}
- Data: ${item.data}
- Horário: ${item.horario}
+ Data: ${dataBrasil} às ${item.horario}
+ Valor: R$ ${valorFormatado}
 
-Para confirmação do agendamento é necessário o pagamento antecipado de 40% do valor do procedimento.
+Já deixei tudo preparado exclusivamente para o seu atendimento. Se precisar de qualquer alteração, é só me avisar por aqui.
 
-Assim conseguimos reservar seu horário exclusivamente para você. `
-);
+Mal posso esperar para deixar suas unhas perfeitas! Nos vemos em breve? `
+  );
 
   window.open(`https://wa.me/55${telefone}?text=${texto}`, "_blank");
 }
-
- useEffect(() => {
-
-  carregarTudo();
-
-  carregarHorariosSemana();
-
-}, []);
 
   const abertos = agendamentos.filter(
     (a) => a.status === "agendado" || a.status === "confirmado"

@@ -405,66 +405,37 @@ if (
 }
 
   async function confirmarAgendamento() {
-    setMensagem("");
+  setMensagem("");
 
-    if (!configAgenda.agendaAberta) {
-      setMensagem(
-        configAgenda.mensagemFechado
-      );
+  if (!configAgenda.agendaAberta) {
+    setMensagem(configAgenda.mensagemFechado);
+    return;
+  }
 
-      return;
-    }
+  if (!servicoEscolhido) {
+    setMensagem("Escolha um serviço para agendar.");
+    return;
+  }
 
-    if (!servicoEscolhido) {
-      setMensagem(
-        "Escolha um serviço para agendar."
-      );
+  if (!nome || !telefone || !data || !horario) {
+    setMensagem("Preencha todos os campos e escolha um horário.");
+    return;
+  }
 
-      return;
-    }
+  if (diaBloqueado) {
+    setMensagem("Essa data está indisponível.");
+    return;
+  }
 
-    if (
-      !nome ||
-      !telefone ||
-      !data ||
-      !horario
-    ) {
-      setMensagem(
-        "Preencha todos os campos e escolha um horário."
-      );
+  if (horariosOcupados.includes(horario) || horariosBloqueados.includes(horario)) {
+    setMensagem("Esse horário não está mais disponível.");
+    return;
+  }
 
-      return;
-    }
+  try {
+    setLoading(true);
 
-    if (diaBloqueado) {
-      setMensagem(
-        "Essa data está indisponível."
-      );
-
-      return;
-    }
-
-    if (
-      horariosOcupados.includes(
-        horario
-      ) ||
-      horariosBloqueados.includes(
-        horario
-      )
-    ) {
-      setMensagem(
-        "Esse horário não está mais disponível."
-      );
-
-      return;
-    }
-
-    try {
-  setLoading(true);
-
-  await addDoc(
-    collection(db, "agendamentos"),
-    {
+    await addDoc(collection(db, "agendamentos"), {
       clienteNome: nome,
       clienteTelefone: telefone,
       servicoId: servicoEscolhido.id,
@@ -474,51 +445,46 @@ if (
       horario,
       status: "agendado",
       criadoEm: new Date()
-    }
-  );
+    });
 
-  setMensagem(
-    "Agendamento realizado com sucesso!"
-  );
+    setMensagem("Agendamento realizado com sucesso!");
 
-  const texto = encodeURIComponent(
-`Novo agendamento pelo site 
+    // Converte a data de AAAA-MM-DD para DD/MM/AAAA antes de enviar
+    const dataBrasil = data.split("-").reverse().join("/");
 
-Cliente: ${nome}
-WhatsApp: ${telefone}
+    // Formata o valor para o padrão brasileiro com vírgula (Ex: R$ 80,00)
+    const valorFormatado = precoFinal().toFixed(2).replace(".", ",");
 
-Serviço: ${servicoEscolhido.nome}
-Data: ${data}
-Horário: ${horario}
+    // ALTERAÇÃO CRUCIAL: Mensagem premium escrita do ponto de vista da CLIENTE
+    const texto = encodeURIComponent(
+`Olá, Lays! 
 
-Valor: R$ ${precoFinal().toFixed(2)}
+Acabei de realizar o meu agendamento pelo seu site e passei para confirmar os detalhes do meu horário:
 
-Já deixei tudo preparado exclusivamente para o seu atendimento. Se precisar de qualquer alteração, é só me avisar por aqui.`
-  );
+ Nome: ${nome}
+ Serviço: ${servicoEscolhido.nome}
+ Data: ${dataBrasil} às ${horario}
+ Valor: R$ ${valorFormatado}
 
-  const numeroLoja =
-    whatsappLoja || "8183339398";
+O que preciso fazer agora para validar a minha vaga? `
+    );
 
-  window.location.href =
-    `https://wa.me/55${numeroLoja}?text=${texto}`;
+    const numeroLoja = whatsappLoja || "8183339398";
 
-  setTimeout(() => {
-    onFechar();
-  }, 500);
+    // Modificado para abrir em nova aba para não fechar o seu site no celular dela
+    window.open(`https://wa.me/55${numeroLoja}?text=${texto}`, "_blank");
 
-} catch (error) {
+    setTimeout(() => {
+      onFechar();
+    }, 500);
 
-  console.log(error);
-
-  setMensagem(
-    "Erro ao realizar agendamento. Tente novamente."
-  );
-
-} finally {
-
-  setLoading(false);
-}
+  } catch (error) {
+    console.log(error);
+    setMensagem("Erro ao realizar agendamento. Tente novamente.");
+  } finally {
+    setLoading(false);
   }
+}
 
 
 
