@@ -278,29 +278,7 @@ async function carregarHorariosSemana() {
   }
 }
 
-  async function carregarHorariosAdmin() {
-
-  try {
-
-    const snap = await getDoc(
-      doc(db, "configAgenda", "horarios")
-    );
-
-    if (snap.exists()) {
-
-      setHorariosAdmin(
-        snap.data().lista || []
-      );
-
-    } else {
-
-      setHorariosAdmin([]);
-    }
-
-  } catch (e) {
-    console.log(e);
-  }
-}
+  
 
   async function excluirAgendamento(id) {
   const confirmar = window.confirm(
@@ -983,9 +961,7 @@ Assim conseguimos reservar seu horário exclusivamente para você. `
   Salvar horários
 </button>
 
-<h2 className="adminTitle">
-  Horários disponíveis
-</h2>
+
 
 <div className="agendaControlCard">
 
@@ -1000,43 +976,14 @@ Assim conseguimos reservar seu horário exclusivamente para você. `
       }}
     >
 
-      <input
-        type="time"
-        value={h}
-        onChange={(e) =>
-          alterarHorario(
-            index,
-            e.target.value
-          )
-        }
-      />
+      
 
-      <button
-        type="button"
-        className="dangerBtn"
-        onClick={() =>
-          removerHorario(index)
-        }
-      >
-        Remover
-      </button>
+      
 
     </div>
   ))}
 
-  <button
-    type="button"
-    onClick={adicionarHorario}
-  >
-    Adicionar horário
-  </button>
 
-  <button
-    type="button"
-    onClick={salvarHorariosAdmin}
-  >
-    Salvar horários
-  </button>
 
 </div>
       {mensagem && (

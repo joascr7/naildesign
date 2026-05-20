@@ -7,7 +7,8 @@ import {
   getDoc,
   query,
   where,
-  doc
+  doc,
+  onSnapshot
 } from "firebase/firestore";
 
 import { db } from "../firebase";
@@ -196,66 +197,6 @@ async function carregarHorariosSemana() {
       setHorariosSemana(
         snap.data()
       );
-
-    } else {
-
-      setHorariosSemana({
-        domingo: {
-          fechado: true,
-          horarios: []
-        },
-
-        segunda: {
-          fechado: false,
-          horarios: [
-            "08:00",
-            "09:00",
-            "10:00"
-          ]
-        },
-
-        terca: {
-          fechado: false,
-          horarios: [
-            "08:00",
-            "09:00",
-            "10:00"
-          ]
-        },
-
-        quarta: {
-          fechado: false,
-          horarios: [
-            "14:00",
-            "15:00",
-            "16:00"
-          ]
-        },
-
-        quinta: {
-          fechado: false,
-          horarios: [
-            "08:00",
-            "09:00"
-          ]
-        },
-
-        sexta: {
-          fechado: false,
-          horarios: [
-            "08:00",
-            "09:00"
-          ]
-        },
-
-        sabado: {
-          fechado: false,
-          horarios: [
-            "08:00",
-            "09:00"
-          ]
-        }
-      });
     }
 
   } catch (error) {
@@ -284,7 +225,9 @@ async function carregarHorariosSemana() {
     }
 
     const dataObj =
-  new Date(dataSelecionada);
+  new Date(
+    dataSelecionada + "T00:00:00"
+  );
 
 const diasSemana = [
   "domingo",
@@ -424,7 +367,9 @@ if (
   }
 
   const dataObj =
-    new Date(dataSelecionada);
+    new Date(
+      dataSelecionada + "T00:00:00"
+    );
 
   const diasSemana = [
     "domingo",
@@ -442,20 +387,21 @@ if (
     ];
 
   const configDia =
-    horariosSemana[nomeDia];
+    horariosSemana?.[nomeDia];
 
   if (!configDia) {
     return [];
   }
 
-  if (configDia.fechado) {
-
+  if (configDia.fechado === true) {
     return [];
   }
 
-  return (
-    configDia.horarios || []
-  );
+  return Array.isArray(
+    configDia.horarios
+  )
+    ? configDia.horarios
+    : [];
 }
 
   async function confirmarAgendamento() {
@@ -578,11 +524,76 @@ Já deixei tudo preparado exclusivamente para o seu atendimento. Se precisar de 
 
 useEffect(() => {
 
-  carregarConfigAgenda();
+  const unsubAgenda = onSnapshot(
+    doc(db, "configAgenda", "principal"),
+    (snap) => {
 
-  carregarHorariosSemana();
+      if (snap.exists()) {
+
+        const dados = snap.data();
+
+        setConfigAgenda({
+          agendaAberta:
+            dados.agendaAberta === true,
+
+          dataInicioAgendamento:
+            dados.dataInicioAgendamento || "",
+
+          mensagemFechado:
+            dados.mensagemFechado ||
+            "Agenda indisponível no momento."
+        });
+      }
+    }
+  );
+
+  const unsubHorarios = onSnapshot(
+    doc(db, "configAgenda", "horariosSemana"),
+    (snap) => {
+
+      if (snap.exists()) {
+
+        setHorariosSemana(
+          snap.data()
+        );
+      }
+    }
+  );
+
+  const unsubSite = onSnapshot(
+    doc(db, "siteConfig", "principal"),
+    (snap) => {
+
+      if (snap.exists()) {
+
+        const dados = snap.data();
+
+        setWhatsappLoja(
+          String(
+            dados.whatsapp || ""
+          ).replace(/\D/g, "")
+        );
+      }
+    }
+  );
+
+  return () => {
+
+    unsubAgenda();
+    unsubHorarios();
+    unsubSite();
+  };
 
 }, []);
+
+useEffect(() => {
+
+  if (data) {
+
+    buscarHorariosOcupados(data);
+  }
+
+}, [horariosSemana]);
 
   return (
     <div className="modalOverlay">
