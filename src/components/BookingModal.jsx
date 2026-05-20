@@ -22,7 +22,7 @@ export default function BookingModal({
   const [servicoEscolhido, setServicoEscolhido] = useState(
     servicoSelecionado || null
   );
-const [horarios, setHorarios] = useState([]);
+
   const [nome, setNome] = useState("");
   const [telefone, setTelefone] = useState("");
   const [data, setData] = useState("");
@@ -37,12 +37,20 @@ const [horarios, setHorarios] = useState([]);
 
   const [diaBloqueado, setDiaBloqueado] = useState(false);
   const [whatsappLoja, setWhatsappLoja] = useState("");
+  const [horariosSemana, setHorariosSemana] =
+  useState({});
+
+  const horariosDisponiveis =
+  pegarHorariosDoDia(data);
 
   const [configAgenda, setConfigAgenda] = useState({
     agendaAberta: true,
     dataInicioAgendamento: "",
     mensagemFechado: "Agenda indisponível no momento."
   });
+
+  const [horarios, setHorarios] =
+  useState([]);
 
   function dataHoje() {
     return new Date().toISOString().split("T")[0];
@@ -170,6 +178,92 @@ const [horarios, setHorarios] = useState([]);
   }
 }
 
+
+async function carregarHorariosSemana() {
+
+  try {
+
+    const snap = await getDoc(
+      doc(
+        db,
+        "configAgenda",
+        "horariosSemana"
+      )
+    );
+
+    if (snap.exists()) {
+
+      setHorariosSemana(
+        snap.data()
+      );
+
+    } else {
+
+      setHorariosSemana({
+        domingo: {
+          fechado: true,
+          horarios: []
+        },
+
+        segunda: {
+          fechado: false,
+          horarios: [
+            "08:00",
+            "09:00",
+            "10:00"
+          ]
+        },
+
+        terca: {
+          fechado: false,
+          horarios: [
+            "08:00",
+            "09:00",
+            "10:00"
+          ]
+        },
+
+        quarta: {
+          fechado: false,
+          horarios: [
+            "14:00",
+            "15:00",
+            "16:00"
+          ]
+        },
+
+        quinta: {
+          fechado: false,
+          horarios: [
+            "08:00",
+            "09:00"
+          ]
+        },
+
+        sexta: {
+          fechado: false,
+          horarios: [
+            "08:00",
+            "09:00"
+          ]
+        },
+
+        sabado: {
+          fechado: false,
+          horarios: [
+            "08:00",
+            "09:00"
+          ]
+        }
+      });
+    }
+
+  } catch (error) {
+
+    console.log(error);
+  }
+}
+
   async function buscarHorariosOcupados(
     dataSelecionada
   ) {
@@ -189,6 +283,40 @@ const [horarios, setHorarios] = useState([]);
       return;
     }
 
+    const dataObj =
+  new Date(dataSelecionada);
+
+const diasSemana = [
+  "domingo",
+  "segunda",
+  "terca",
+  "quarta",
+  "quinta",
+  "sexta",
+  "sabado"
+];
+
+const nomeDia =
+  diasSemana[
+    dataObj.getDay()
+  ];
+
+const configDia =
+  horariosSemana[nomeDia];
+
+if (
+  configDia?.fechado
+) {
+
+  setDiaBloqueado(true);
+
+  setMensagem(
+    "Não atendemos nesse dia."
+  );
+
+  return;
+}
+    
     if (!configAgenda.agendaAberta) {
       setDiaBloqueado(true);
 
@@ -286,6 +414,49 @@ const [horarios, setHorarios] = useState([]);
       bloqueados
     );
   }
+
+  function pegarHorariosDoDia(
+  dataSelecionada
+) {
+
+  if (!dataSelecionada) {
+    return [];
+  }
+
+  const dataObj =
+    new Date(dataSelecionada);
+
+  const diasSemana = [
+    "domingo",
+    "segunda",
+    "terca",
+    "quarta",
+    "quinta",
+    "sexta",
+    "sabado"
+  ];
+
+  const nomeDia =
+    diasSemana[
+      dataObj.getDay()
+    ];
+
+  const configDia =
+    horariosSemana[nomeDia];
+
+  if (!configDia) {
+    return [];
+  }
+
+  if (configDia.fechado) {
+
+    return [];
+  }
+
+  return (
+    configDia.horarios || []
+  );
+}
 
   async function confirmarAgendamento() {
     setMensagem("");
@@ -405,9 +576,12 @@ Já deixei tudo preparado exclusivamente para o seu atendimento. Se precisar de 
 
 
 
-   useEffect(() => {
+useEffect(() => {
+
   carregarConfigAgenda();
-  carregarHorarios();
+
+  carregarHorariosSemana();
+
 }, []);
 
   return (
@@ -551,8 +725,7 @@ Já deixei tudo preparado exclusivamente para o seu atendimento. Se precisar de 
 
 </div>
         <div className="horariosGrid">
-          {Array.isArray(horarios) &&
-          horarios.map((h) => {
+          {horariosDisponiveis.map((h) => {
             const ocupado =
               horariosOcupados.includes(
                 h

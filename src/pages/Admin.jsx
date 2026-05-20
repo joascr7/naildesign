@@ -71,6 +71,76 @@ const [grupoCanceladosAberto, setGrupoCanceladosAberto] =
     heroImagem: ""
   });
 
+
+  const diasSemana = [
+  "domingo",
+  "segunda",
+  "terca",
+  "quarta",
+  "quinta",
+  "sexta",
+  "sabado"
+];
+
+const [horariosSemana, setHorariosSemana] =
+  useState({
+    domingo: {
+      fechado: true,
+      horarios: []
+    },
+
+    segunda: {
+      fechado: false,
+      horarios: [
+        "08:00",
+        "09:00",
+        "10:00"
+      ]
+    },
+
+    terca: {
+      fechado: false,
+      horarios: [
+        "08:00",
+        "09:00",
+        "10:00"
+      ]
+    },
+
+    quarta: {
+      fechado: false,
+      horarios: [
+        "14:00",
+        "15:00",
+        "16:00"
+      ]
+    },
+
+    quinta: {
+      fechado: false,
+      horarios: [
+        "08:00",
+        "09:00"
+      ]
+    },
+
+    sexta: {
+      fechado: false,
+      horarios: [
+        "08:00",
+        "09:00"
+      ]
+    },
+
+    sabado: {
+      fechado: false,
+      horarios: [
+        "08:00",
+        "09:00"
+      ]
+    }
+  });
+
   const [novoBloqueio, setNovoBloqueio] = useState(bloqueioVazio);
   const [bloqueios, setBloqueios] = useState([]);
   const [horariosAdmin, setHorariosAdmin] =
@@ -156,6 +226,55 @@ async function salvarHorariosAdmin() {
     setMensagem(
       "Erro ao salvar horários."
     );
+  }
+}
+
+async function salvarHorariosSemana() {
+
+  try {
+
+    await setDoc(
+      doc(db, "configAgenda", "horariosSemana"),
+      horariosSemana
+    );
+
+    setMensagem(
+      "Horários salvos com sucesso."
+    );
+
+  } catch (error) {
+
+    console.log(error);
+
+    setMensagem(
+      "Erro ao salvar horários."
+    );
+  }
+}
+
+
+async function carregarHorariosSemana() {
+
+  try {
+
+    const snap = await getDoc(
+      doc(
+        db,
+        "configAgenda",
+        "horariosSemana"
+      )
+    );
+
+    if (snap.exists()) {
+
+      setHorariosSemana(
+        snap.data()
+      );
+    }
+
+  } catch (error) {
+
+    console.log(error);
   }
 }
 
@@ -673,9 +792,13 @@ Assim conseguimos reservar seu horário exclusivamente para você. `
   window.open(`https://wa.me/55${telefone}?text=${texto}`, "_blank");
 }
 
-  useEffect(() => {
-    carregarTudo();
-  }, []);
+ useEffect(() => {
+
+  carregarTudo();
+
+  carregarHorariosSemana();
+
+}, []);
 
   const abertos = agendamentos.filter(
     (a) => a.status === "agendado" || a.status === "confirmado"
@@ -768,6 +891,97 @@ Assim conseguimos reservar seu horário exclusivamente para você. `
     </a>
 
   </div>
+
+
+
+<h2 className="adminTitle">
+  Horários por dia
+</h2>
+
+<div className="agendaDiasGrid">
+
+  {diasSemana.map((dia) => (
+
+    <div
+      key={dia}
+      className="agendaDiaCard"
+    >
+
+      <h3>
+        {dia}
+      </h3>
+
+      <label className="checkLine">
+
+        <input
+          type="checkbox"
+
+          checked={
+            horariosSemana[dia]
+              ?.fechado || false
+          }
+
+          onChange={(e) => {
+
+            setHorariosSemana((atual) => ({
+              ...atual,
+
+              [dia]: {
+                ...atual[dia],
+
+                fechado:
+                  e.target.checked
+              }
+            }));
+          }}
+        />
+
+        Dia fechado
+
+      </label>
+
+      <textarea
+        placeholder="08:00,09:00,10:00"
+
+        value={
+          horariosSemana[dia]
+            ?.horarios
+            ?.join(",") || ""
+        }
+
+        onChange={(e) => {
+
+          const lista =
+            e.target.value
+              .split(",")
+
+              .map((h) =>
+                h.trim()
+              )
+
+              .filter(Boolean);
+
+          setHorariosSemana((atual) => ({
+            ...atual,
+
+            [dia]: {
+              ...atual[dia],
+
+              horarios: lista
+            }
+          }));
+        }}
+      />
+
+    </div>
+  ))}
+</div>
+
+<button
+  onClick={salvarHorariosSemana}
+>
+  Salvar horários
+</button>
 
 <h2 className="adminTitle">
   Horários disponíveis

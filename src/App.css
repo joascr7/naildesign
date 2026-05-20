@@ -1762,3 +1762,187 @@ html {
     margin-right: 0 !important;
   }
 }
+
+.agendaDiasGrid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(220px, 1fr)
+  );
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.agendaDiaCard {
+  background: #fff;
+  border-radius: 22px;
+  padding: 20px;
+  border: 1px solid #f1f1f1;
+  box-shadow:
+    0 10px 25px rgba(0,0,0,0.04);
+}
+
+.agendaDiaCard h3 {
+  margin: 0 0 16px;
+  font-size: 18px;
+  font-weight: 800;
+  color: #111;
+  text-transform: capitalize;
+}
+
+.agendaDiaCard textarea {
+  width: 100%;
+  min-height: 90px;
+  resize: vertical;
+
+  border: 1px solid #ececec;
+  border-radius: 16px;
+
+  padding: 14px;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  outline: none;
+
+  transition: 0.2s;
+  margin-top: 14px;
+
+  background: #fafafa;
+}
+
+.agendaDiaCard textarea:focus {
+  border-color: #ea1d2c;
+  background: #fff;
+  box-shadow:
+    0 0 0 4px rgba(234,29,44,0.08);
+}
+
+.checkLine {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+
+  margin-bottom: 12px;
+}
+
+.checkLine input {
+  width: 18px;
+  height: 18px;
+  accent-color: #ea1d2c;
+}
+
+.agendaControlCard {
+  background: #fff;
+  border-radius: 24px;
+  padding: 24px;
+
+  border: 1px solid #f1f1f1;
+
+  box-shadow:
+    0 12px 30px rgba(0,0,0,0.05);
+
+  margin-bottom: 24px;
+}
+
+.agendaControlCard button {
+  height: 48px;
+  border: none;
+  border-radius: 16px;
+
+  padding: 0 22px;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+
+  background:
+    linear-gradient(
+      135deg,
+      #ea1d2c,
+      #ff4d5e
+    );
+
+  color: #fff;
+
+  box-shadow:
+    0 10px 20px rgba(234,29,44,0.18);
+}
+
+.agendaControlCard button:hover {
+  transform: translateY(-2px);
+}
+
+.agendaControlCard input[type="time"] {
+  flex: 1;
+
+  height: 46px;
+
+  border-radius: 14px;
+  border: 1px solid #ececec;
+
+  padding: 0 14px;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  outline: none;
+
+  background: #fafafa;
+
+  transition: 0.2s;
+}
+
+.agendaControlCard input[type="time"]:focus {
+  border-color: #ea1d2c;
+  background: #fff;
+
+  box-shadow:
+    0 0 0 4px rgba(234,29,44,0.08);
+}
+
+.dangerBtn {
+  height: 46px;
+  border: none;
+
+  padding: 0 18px;
+
+  border-radius: 14px;
+
+  background: #111;
+  color: #fff;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.dangerBtn:hover {
+  opacity: 0.9;
+}
+
+@media (max-width: 768px) {
+
+  .agendaDiasGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .agendaDiaCard {
+    padding: 18px;
+  }
+
+  .agendaControlCard {
+    padding: 18px;
+  }
+
+}
