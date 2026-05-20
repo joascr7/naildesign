@@ -1010,35 +1010,35 @@ button:hover {
 }
 
 /* ==========================================================================
-   FORMULÁRIOS DO ADMIN - CORREÇÃO DE LARGURA COMPLETA PARA MOBILE
+   RESET TOTAL PARA INPUTS DE DATA NO PAINEL ADMIN (IPHONE/IOS)
    ========================================================================== */
 
-.agendaControlCard input,
-.agendaControlCard textarea,
-.premiumForm input,
-.premiumForm textarea {
+/* Aplica a trava em todos os campos de data dentro do card de controle e bloqueio */
+.agendaControlCard input[type="date"],
+.premiumForm input[type="date"],
+.dateInput {
   width: 100% !important;
-  max-width: 100% !important; /* Impede qualquer expansão forçada */
-  height: auto;
-  border: 1px solid #e0ded7;
-  border-radius: 16px;
-  padding: 14px;
-  font-size: 14px;
-  outline: none;
-  background: #fafafa;
-  color: #211512;
-  display: block;
+  max-width: 100% !important;
+  height: 48px !important; /* Altura idêntica aos outros inputs padrão */
+  border: 1px solid #e0ded7 !important; /* Força a bordinha cinza premium */
+  border-radius: 16px !important;
+  padding: 0 14px !important;
+  background: #fafafa !important;
+  color: #211512 !important;
+  display: block !important;
 
-  /* AS LINHAS QUE MATAM O BUG: */
-  box-sizing: border-box !important; /* Força o padding a ficar preso do lado de dentro */
-  min-width: 0 !important;           /* Zera restrições fantasmas de tamanho do navegador */
+  /* CORREÇÕES CRUCIAIS PARA PARAR DE PASSAR DA TELA NO IPHONE: */
+  box-sizing: border-box !important;   /* Força o padding a ficar do lado de dentro */
+  min-width: 0 !important;             /* Mata a largura mínima fantasma do calendário */
+  appearance: none !important;         /* Desativa o visual nativo esticado do iOS */
+  -webkit-appearance: none !important; /* Garante o reset no Safari do celular */
 }
 
-/* Ajuste específico para a Textarea não bugar no arrastar do mobile */
-.agendaControlCard textarea,
-.premiumForm textarea {
-  resize: vertical; /* Permite esticar apenas para baixo, nunca para os lados */
-  min-height: 80px;
+/* Garante que o container que envelopa esses blocos de datas respeite o limite */
+.agendaControlCard div,
+.premiumForm div {
+  max-width: 100% !important;
+  box-sizing: border-box !important;
 }
 
 .formLabel {
