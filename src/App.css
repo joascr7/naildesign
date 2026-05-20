@@ -1029,7 +1029,9 @@ button:hover {
   margin-top: 4px;
 }
 
-/* Correção para o switch do admin não esmagar no mobile */
+/* ==========================================================================
+   LINHA DO SWITCH (PROMOÇÃO / SERVIÇO ATIVO) - CORREÇÃO MOBILE
+   ========================================================================== */
 .switchLine {
   display: flex;
   gap: 14px;
@@ -1039,17 +1041,32 @@ button:hover {
   border-radius: 18px;
   border: 1px solid #e0ded7;
   width: 100%;
+  max-width: 100%;
+  box-sizing: border-box !important;
 }
 
-.switchLine input {
-  width: 22px;
-  height: 22px;
-  flex-shrink: 0; /* Impede o checkbox de virar um traço esmagado */
+.switchLine input[type="checkbox"] {
+  width: 22px !important;
+  height: 22px !important;
+  min-width: 22px !important; /* Trava absoluta do tamanho do checkbox */
+  min-height: 22px !important;
+  flex-shrink: 0; 
+  cursor: pointer;
+  margin: 0;
+}
+
+/* Container do texto para ele saber que pode encolher sem quebrar o layout */
+.switchLine div,
+.switchLine .switchText {
+  flex: 1;
+  min-width: 0; 
 }
 
 .switchLine strong {
   display: block;
   color: #211512;
+  font-size: 15px;
+  word-wrap: break-word;
 }
 
 .switchLine span {
@@ -1057,12 +1074,17 @@ button:hover {
   color: #6b5d57;
   font-size: 13px;
   margin-top: 3px;
+  word-wrap: break-word;
 }
 
+/* ==========================================================================
+   LISTA DE BLOQUEIOS - CORREÇÃO MOBILE (EMPILHAMENTO INTELIGENTE)
+   ========================================================================== */
 .bloqueiosList {
   display: grid;
   gap: 12px;
   margin-top: 18px;
+  width: 100%;
 }
 
 .bloqueioItem {
@@ -1076,23 +1098,58 @@ button:hover {
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.03);
   border: 1px solid #e0ded7;
   width: 100%;
+  max-width: 100%;
+  box-sizing: border-box !important;
+}
+
+/* Envolve as tags strong e span do bloqueio para controlar o texto */
+.bloqueioItem div,
+.bloqueioItem .bloqueioText {
+  flex: 1;
+  min-width: 0;
 }
 
 .bloqueioItem strong {
   display: block;
   color: #402e29;
   margin-bottom: 4px;
+  font-size: 15px;
+  word-wrap: break-word;
 }
 
 .bloqueioItem span {
   color: #5c504a;
   font-size: 13px;
+  display: block;
+  word-wrap: break-word;
 }
 
 .bloqueioItem button {
   background: #c40000;
-  padding: 10px 14px;
+  padding: 10px 16px;
+  height: 40px;
+  font-size: 13px;
+  font-weight: 800;
+  border-radius: 10px;
   flex-shrink: 0;
+  margin: 0;
+  width: auto;
+}
+
+/* REGRA DE OURO PARA TELAS PEQUENAS (MOBILE) */
+@media (max-width: 480px) {
+  .bloqueioItem {
+    flex-direction: column; /* Transforma em linha vertical para não esmagar nada */
+    align-items: stretch;   /* Força o botão a ocupar as laterais perfeitamente */
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .bloqueioItem button {
+    width: 100% !important; /* Botão de excluir fica grande e fácil de clicar no celular */
+    height: 44px;
+    text-align: center;
+  }
 }
 
 @media (max-width: 768px) {
