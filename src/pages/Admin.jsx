@@ -13,6 +13,7 @@ import {
   addDoc,
   getDoc,
   setDoc,
+  onSnapshot,
   deleteDoc
 } from "firebase/firestore";
 
@@ -793,6 +794,15 @@ Mal posso esperar para deixar suas unhas perfeitas! Nos vemos em breve? `
     (acc, item) => acc + Number(item.valor || 0),
     0
   );
+
+
+  useEffect(() => {
+
+  carregarTudo();
+
+  carregarHorariosSemana();
+
+}, []);
 
   return (
    <div className="adminPage adminPremium">
