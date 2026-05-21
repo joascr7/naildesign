@@ -1486,7 +1486,9 @@ Mal posso esperar para deixar suas unhas perfeitas! Nos vemos em breve? `
             <span>{item.clienteTelefone}</span>
 
             <p>{item.servicoNome}</p>
-            <p>{formatarDataBrasil(item.data)}às {item.horario}</p>
+            <p className="agendamentoData">
+              {`${formatarDataBrasil(item.data)} às ${item.horario}`}
+            </p>
 
             <b>R$ {Number(item.valor).toFixed(2)}</b>
 
