@@ -285,16 +285,19 @@ if (
     }
 
     const qAgendamentos = query(
-      collection(db, "agendamentos"),
+  collection(db, "agendamentos"),
+  where("data", "==", dataSelecionada)
+);
 
-      where("data", "==", dataSelecionada),
-
-      where(
-        "status",
-        "in",
-        ["agendado", "confirmado"]
-      )
-    );
+const ocupados =
+  snapAgendamentos.docs
+    .map((docItem) => docItem.data())
+    .filter(
+      (item) =>
+        item.status === "agendado" ||
+        item.status === "confirmado"
+    )
+    .map((item) => item.horario);
 
     const snapAgendamentos =
       await getDocs(qAgendamentos);
@@ -472,7 +475,8 @@ O que preciso fazer agora para validar a minha vaga? `
     const numeroLoja = whatsappLoja || "8183339398";
 
     // Modificado para abrir em nova aba para não fechar o seu site no celular dela
-    window.open(`https://wa.me/55${numeroLoja}?text=${texto}`, "_blank");
+    window.location.href =
+  `https://wa.me/55${numeroLoja}?text=${texto}`;
 
     setTimeout(() => {
       onFechar();

@@ -162,17 +162,7 @@ const [horariosSemana, setHorariosSemana] =
     ]);
   }
 
-  async function carregarAgendamentos() {
-    const q = query(collection(db, "agendamentos"), orderBy("criadoEm", "desc"));
-    const snap = await getDocs(q);
-
-    setAgendamentos(
-      snap.docs.map((d) => ({
-        id: d.id,
-        ...d.data()
-      }))
-    );
-  }
+ 
 
 
   function adicionarHorario() {
@@ -798,9 +788,42 @@ Mal posso esperar para deixar suas unhas perfeitas! Nos vemos em breve? `
 
   useEffect(() => {
 
-  carregarTudo();
+  carregarServicos();
+
+  carregarConfigAgenda();
+
+  carregarConfigSite();
+
+  carregarBloqueios();
+
+  carregarGaleria();
 
   carregarHorariosSemana();
+
+  carregarHorariosAdmin();
+
+  const q = query(
+    collection(db, "agendamentos"),
+    orderBy("criadoEm", "desc")
+  );
+
+  const unsub = onSnapshot(
+    q,
+    (snap) => {
+
+      setAgendamentos(
+        snap.docs.map((d) => ({
+          id: d.id,
+          ...d.data()
+        }))
+      );
+    }
+  );
+
+  return () => {
+
+    unsub();
+  };
 
 }, []);
 
