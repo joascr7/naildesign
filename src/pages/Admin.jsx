@@ -630,6 +630,19 @@ async function excluirServico(id) {
     }
   }
 
+  function formatarDataBrasil(data) {
+
+  if (!data) return "";
+
+  const partes = data.split("-");
+
+  if (partes.length !== 3) {
+    return data;
+  }
+
+  return `${partes[2]}/${partes[1]}/${partes[0]}`;
+}
+
   async function criarGaleria() {
     setMensagem("Adicionando foto...");
 
@@ -1473,7 +1486,7 @@ Mal posso esperar para deixar suas unhas perfeitas! Nos vemos em breve? `
             <span>{item.clienteTelefone}</span>
 
             <p>{item.servicoNome}</p>
-            <p>{item.data} às {item.horario}</p>
+            <p>{formatarDataBrasil(item.data)}às {item.horario}</p>
 
             <b>R$ {Number(item.valor).toFixed(2)}</b>
 
@@ -1550,7 +1563,7 @@ Mal posso esperar para deixar suas unhas perfeitas! Nos vemos em breve? `
           <p>{item.servicoNome}</p>
 
           <p>
-            {item.data} às {item.horario}
+            {formatarDataBrasil(item.data)} às {item.horario}
           </p>
 
           <strong>
@@ -1615,7 +1628,7 @@ Mal posso esperar para deixar suas unhas perfeitas! Nos vemos em breve? `
           <p>{item.servicoNome}</p>
 
           <p>
-            {item.data} às {item.horario}
+            {formatarDataBrasil(item.data)} às {item.horario}
           </p>
 
           <strong>
