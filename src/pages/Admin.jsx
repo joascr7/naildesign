@@ -1563,8 +1563,10 @@ Mal posso esperar para deixar suas unhas perfeitas! Nos vemos em breve? `
           <p>{item.servicoNome}</p>
 
           <p>
-          {`${formatarDataBrasil(item.data)} às ${item.horario}`}
-           </p>
+  {formatarDataBrasil(item.data)}
+  {" às "}
+  {item.horario}
+</p>
 
           <strong>
             R$ {Number(item.valor || 0).toFixed(2)}
@@ -1627,11 +1629,13 @@ Mal posso esperar para deixar suas unhas perfeitas! Nos vemos em breve? `
 
           <p>{item.servicoNome}</p>
 
-          <p>
+          
             <p>
-            {`${formatarDataBrasil(item.data)} às ${item.horario}`}
-          </p>
-          </p>
+  {formatarDataBrasil(item.data)}
+  {" às "}
+  {item.horario}
+</p>
+          
 
           <strong>
             R$ {Number(item.valor || 0).toFixed(2)}
