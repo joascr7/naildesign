@@ -205,161 +205,169 @@ async function carregarHorariosSemana() {
   }
 }
 
-  async function buscarHorariosOcupados(
-    dataSelecionada
-  ) {
-    setData(dataSelecionada);
-
-    setHorario("");
-
-    setMensagem("");
-
-    setDiaBloqueado(false);
-
-    setHorariosOcupados([]);
-
-    setHorariosBloqueados([]);
-
-    if (!dataSelecionada) {
-      return;
-    }
-
-    const dataObj =
-  new Date(
-    dataSelecionada + "T00:00:00"
-  );
-
-const diasSemana = [
-  "domingo",
-  "segunda",
-  "terca",
-  "quarta",
-  "quinta",
-  "sexta",
-  "sabado"
-];
-
-const nomeDia =
-  diasSemana[
-    dataObj.getDay()
-  ];
-
-const configDia =
-  horariosSemana[nomeDia];
-
-if (
-  configDia?.fechado
+ async function buscarHorariosOcupados(
+  dataSelecionada
 ) {
 
-  setDiaBloqueado(true);
+  setData(dataSelecionada);
 
-  setMensagem(
-    "Não atendemos nesse dia."
+  setHorario("");
+
+  setMensagem("");
+
+  setDiaBloqueado(false);
+
+  setHorariosOcupados([]);
+
+  setHorariosBloqueados([]);
+
+  if (!dataSelecionada) {
+    return;
+  }
+
+  const dataObj =
+    new Date(
+      dataSelecionada + "T00:00:00"
+    );
+
+  const diasSemana = [
+    "domingo",
+    "segunda",
+    "terca",
+    "quarta",
+    "quinta",
+    "sexta",
+    "sabado"
+  ];
+
+  const nomeDia =
+    diasSemana[
+      dataObj.getDay()
+    ];
+
+  const configDia =
+    horariosSemana[nomeDia];
+
+  if (configDia?.fechado) {
+
+    setDiaBloqueado(true);
+
+    setMensagem(
+      "Não atendemos nesse dia."
+    );
+
+    return;
+  }
+
+  if (!configAgenda.agendaAberta) {
+
+    setDiaBloqueado(true);
+
+    setMensagem(
+      configAgenda.mensagemFechado
+    );
+
+    return;
+  }
+
+  if (
+    configAgenda.dataInicioAgendamento &&
+    dataSelecionada <
+      configAgenda.dataInicioAgendamento
+  ) {
+
+    setDiaBloqueado(true);
+
+    setMensagem(
+      `Agendamentos disponíveis a partir de ${configAgenda.dataInicioAgendamento}.`
+    );
+
+    return;
+  }
+
+  const qAgendamentos = query(
+    collection(db, "agendamentos"),
+    where("data", "==", dataSelecionada)
   );
 
-  return;
-}
-    
-    if (!configAgenda.agendaAberta) {
-      setDiaBloqueado(true);
+  const snapAgendamentos =
+    await getDocs(qAgendamentos);
 
-      setMensagem(
-        configAgenda.mensagemFechado
+  const ocupados =
+    snapAgendamentos.docs
+
+      .map((docItem) =>
+        docItem.data()
+      )
+
+      .filter(
+        (item) =>
+          item.status === "agendado" ||
+          item.status === "confirmado"
+      )
+
+      .map(
+        (item) => item.horario
       );
 
-      return;
-    }
-
-    if (
-      configAgenda.dataInicioAgendamento &&
-      dataSelecionada <
-        configAgenda.dataInicioAgendamento
-    ) {
-      setDiaBloqueado(true);
-
-      setMensagem(
-        `Agendamentos disponíveis a partir de ${configAgenda.dataInicioAgendamento}.`
-      );
-
-      return;
-    }
-
-    const qAgendamentos = query(
-  collection(db, "agendamentos"),
-  where("data", "==", dataSelecionada)
-);
-
-const ocupados =
-  snapAgendamentos.docs
-    .map((docItem) => docItem.data())
-    .filter(
-      (item) =>
-        item.status === "agendado" ||
-        item.status === "confirmado"
-    )
-    .map((item) => item.horario);
-
-    const snapAgendamentos =
-      await getDocs(qAgendamentos);
-
-    const ocupados =
-      snapAgendamentos.docs.map(
-        (docItem) =>
-          docItem.data().horario
-      );
-
-    const snapBloqueios =
-      await getDocs(
-        collection(db, "bloqueiosAgenda")
-      );
-
-    const bloqueiosAtivos =
-      snapBloqueios.docs
-        .map((docItem) => ({
-          id: docItem.id,
-          ...docItem.data()
-        }))
-
-        .filter(
-          (b) => b.ativo !== false
-        )
-
-        .filter((b) =>
-          dataDentroDoBloqueio(
-            dataSelecionada,
-            b.dataInicio,
-            b.dataFim
-          )
-        );
-
-    const bloqueioDiaTodo =
-      bloqueiosAtivos.find(
-        (b) => b.diaTodo === true
-      );
-
-    if (bloqueioDiaTodo) {
-      setDiaBloqueado(true);
-
-      setMensagem(
-        bloqueioDiaTodo.motivo
-          ? `Data indisponível: ${bloqueioDiaTodo.motivo}`
-          : "Data indisponível."
-      );
-
-      return;
-    }
-
-    const bloqueados =
-      bloqueiosAtivos
-        .filter((b) => b.horario)
-        .map((b) => b.horario);
-
-    setHorariosOcupados(ocupados);
-
-    setHorariosBloqueados(
-      bloqueados
+  const snapBloqueios =
+    await getDocs(
+      collection(db, "bloqueiosAgenda")
     );
+
+  const bloqueiosAtivos =
+    snapBloqueios.docs
+
+      .map((docItem) => ({
+        id: docItem.id,
+        ...docItem.data()
+      }))
+
+      .filter(
+        (b) => b.ativo !== false
+      )
+
+      .filter((b) =>
+        dataDentroDoBloqueio(
+          dataSelecionada,
+          b.dataInicio,
+          b.dataFim
+        )
+      );
+
+  const bloqueioDiaTodo =
+    bloqueiosAtivos.find(
+      (b) => b.diaTodo === true
+    );
+
+  if (bloqueioDiaTodo) {
+
+    setDiaBloqueado(true);
+
+    setMensagem(
+      bloqueioDiaTodo.motivo
+        ? `Data indisponível: ${bloqueioDiaTodo.motivo}`
+        : "Data indisponível."
+    );
+
+    return;
   }
+
+  const bloqueados =
+    bloqueiosAtivos
+
+      .filter((b) => b.horario)
+
+      .map((b) => b.horario);
+
+  setHorariosOcupados(
+    ocupados
+  );
+
+  setHorariosBloqueados(
+    bloqueados
+  );
+}
 
   function pegarHorariosDoDia(
   dataSelecionada
