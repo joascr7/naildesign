@@ -770,7 +770,8 @@ Já deixei tudo preparado exclusivamente para o seu atendimento. Se precisar de 
 Mal posso esperar para deixar suas unhas perfeitas! Nos vemos em breve? `
   );
 
-  window.open(`https://wa.me/55${telefone}?text=${texto}`, "_blank");
+  window.location.href =
+  `https://wa.me/55${numeroLoja}?text=${texto}`;
 }
 
   const abertos = agendamentos.filter(
@@ -786,7 +787,39 @@ Mal posso esperar para deixar suas unhas perfeitas! Nos vemos em breve? `
   );
 
 
-  useEffect(() => {
+  async function carregarHorariosAdmin() {
+
+  try {
+
+    const snap = await getDoc(
+      doc(db, "configAgenda", "horarios")
+    );
+
+    if (snap.exists()) {
+
+      const dados = snap.data();
+
+      setHorariosAdmin(
+        Array.isArray(dados.lista)
+          ? dados.lista
+          : []
+      );
+
+    } else {
+
+      setHorariosAdmin([]);
+    }
+
+  } catch (error) {
+
+    console.log(error);
+
+    setHorariosAdmin([]);
+  }
+}
+
+
+ useEffect(() => {
 
   carregarServicos();
 
@@ -802,21 +835,34 @@ Mal posso esperar para deixar suas unhas perfeitas! Nos vemos em breve? `
 
   carregarHorariosAdmin();
 
-  const q = query(
-    collection(db, "agendamentos"),
-    orderBy("criadoEm", "desc")
+  const q = collection(
+    db,
+    "agendamentos"
   );
 
   const unsub = onSnapshot(
     q,
     (snap) => {
 
-      setAgendamentos(
-        snap.docs.map((d) => ({
-          id: d.id,
-          ...d.data()
-        }))
-      );
+      const lista =
+        snap.docs
+          .map((d) => ({
+            id: d.id,
+            ...d.data()
+          }))
+
+          .sort((a, b) => {
+
+            const dataA =
+              a.criadoEm?.seconds || 0;
+
+            const dataB =
+              b.criadoEm?.seconds || 0;
+
+            return dataB - dataA;
+          });
+
+      setAgendamentos(lista);
     }
   );
 
