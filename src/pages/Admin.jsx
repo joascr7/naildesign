@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
 import "../App.css";
 import { signOut } from "firebase/auth";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
 
 import {
   collection,
   getDocs,
-  orderBy,
-  query,
   doc,
   updateDoc,
   addDoc,
@@ -17,8 +15,9 @@ import {
   deleteDoc
 } from "firebase/firestore";
 
-import { db } from "../firebase";
-
+// ==========================================
+// ESTADOS INICIAIS (Fora do componente para evitar recriação)
+// ==========================================
 const servicoVazio = {
   nome: "",
   descricao: "",
@@ -45,24 +44,44 @@ const galeriaVazia = {
   ativo: true
 };
 
+const diasSemanaIniciais = [
+  "domingo", "segunda", "terca", "quarta", "quinta", "sexta", "sabado"
+];
+
+// ==========================================
+// COMPONENTE PRINCIPAL
+// ==========================================
 export default function Admin() {
+  // 🔥 ESTADOS GERAIS
+  const [mensagem, setMensagem] = useState("");
+  const [grupoFinalizadosAberto, setGrupoFinalizadosAberto] = useState(false);
+  const [grupoCanceladosAberto, setGrupoCanceladosAberto] = useState(false);
+  const [diasAbertosExpandidos, setDiasAbertosExpandidos] = useState({});
+
+  // 🔥 ESTADO DO MODAL DE CONFIRMAÇÃO (Substitui o window.confirm)
+  const [modalConfirmacao, setModalConfirmacao] = useState({
+    aberto: false,
+    mensagem: "",
+    acao: null
+  });
+
+  // 🔥 ESTADOS DE DADOS
   const [agendamentos, setAgendamentos] = useState([]);
   const [servicos, setServicos] = useState([]);
   const [novoServico, setNovoServico] = useState(servicoVazio);
-  const [mensagem, setMensagem] = useState("");
-  // 🔥 ESTADO
-const [grupoFinalizadosAberto, setGrupoFinalizadosAberto] =
-  useState(false);
-
-const [grupoCanceladosAberto, setGrupoCanceladosAberto] =
-  useState(false);
-
+  const [galeria, setGaleria] = useState([]);
+  const [novaGaleria, setNovaGaleria] = useState(galeriaVazia);
+  const [bloqueios, setBloqueios] = useState([]);
+  const [novoBloqueio, setNovoBloqueio] = useState(bloqueioVazio);
+  
+  // 🔥 ESTADOS DE CONFIGURAÇÃO E AGENDA
+  const [horariosAdmin, setHorariosAdmin] = useState([]);
+  const [horariosSemana, setHorariosSemana] = useState({});
   const [configAgenda, setConfigAgenda] = useState({
     agendaAberta: true,
     dataInicioAgendamento: "",
     mensagemFechado: "Agenda indisponível no momento."
   });
-
   const [configSite, setConfigSite] = useState({
     nomeLoja: "Lays Nails Designer",
     whatsapp: "",
@@ -72,1263 +91,634 @@ const [grupoCanceladosAberto, setGrupoCanceladosAberto] =
     heroImagem: ""
   });
 
-
-  const diasSemana = [
-  "domingo",
-  "segunda",
-  "terca",
-  "quarta",
-  "quinta",
-  "sexta",
-  "sabado"
-];
-
-const [horariosSemana, setHorariosSemana] =
-  useState({
-    domingo: {
-      fechado: true,
-      horarios: []
-    },
-
-    segunda: {
-      fechado: false,
-      horarios: [
-        "08:00",
-        "09:00",
-        "10:00"
-      ]
-    },
-
-    terca: {
-      fechado: false,
-      horarios: [
-        "08:00",
-        "09:00",
-        "10:00"
-      ]
-    },
-
-    quarta: {
-      fechado: false,
-      horarios: [
-        "14:00",
-        "15:00",
-        "16:00"
-      ]
-    },
-
-    quinta: {
-      fechado: false,
-      horarios: [
-        "08:00",
-        "09:00"
-      ]
-    },
-
-    sexta: {
-      fechado: false,
-      horarios: [
-        "08:00",
-        "09:00"
-      ]
-    },
-
-    sabado: {
-      fechado: false,
-      horarios: [
-        "08:00",
-        "09:00"
-      ]
-    }
-  });
-
-  const [novoBloqueio, setNovoBloqueio] = useState(bloqueioVazio);
-  const [bloqueios, setBloqueios] = useState([]);
-  const [horariosAdmin, setHorariosAdmin] =
-  useState([]);
-
-  const [galeria, setGaleria] = useState([]);
-  const [novaGaleria, setNovaGaleria] = useState(galeriaVazia);
-
-  async function carregarTudo() {
-    await Promise.all([
-      carregarAgendamentos(),
-      carregarServicos(),
-      carregarConfigAgenda(),
-      carregarConfigSite(),
-      carregarBloqueios(),
-      carregarGaleria(),
-      carregarHorariosAdmin()
-    ]);
+  // ==========================================
+  // FUNÇÕES DO MODAL DE CONFIRMAÇÃO
+  // ==========================================
+  function pedirConfirmacao(mensagem, acaoCallback) {
+    setModalConfirmacao({
+      aberto: true,
+      mensagem,
+      acao: acaoCallback
+    });
   }
 
- 
-
-
-  function adicionarHorario() {
-
-  setHorariosAdmin((atual) => [
-    ...atual,
-    ""
-  ]);
-}
-
-function alterarHorario(index, valor) {
-
-  const copia = [...horariosAdmin];
-
-  copia[index] = valor;
-
-  setHorariosAdmin(copia);
-}
-
-function removerHorario(index) {
-
-  setHorariosAdmin((atual) =>
-    atual.filter((_, i) => i !== index)
-  );
-}
-
-
-async function salvarHorariosAdmin() {
-
-  try {
-
-    const horariosLimpos =
-      horariosAdmin
-        .filter((h) => h?.trim())
-        .sort();
-
-    await setDoc(
-      doc(db, "configAgenda", "horarios"),
-      {
-        lista: horariosLimpos
-      }
-    );
-
-    setMensagem(
-      "Horários salvos com sucesso."
-    );
-
-  } catch (e) {
-
-    console.log(e);
-
-    setMensagem(
-      "Erro ao salvar horários."
-    );
+  function executarConfirmacao() {
+    if (modalConfirmacao.acao) modalConfirmacao.acao();
+    fecharModal();
   }
-}
 
-async function salvarHorariosSemana() {
-
-  try {
-
-    await setDoc(
-      doc(db, "configAgenda", "horariosSemana"),
-      horariosSemana
-    );
-
-    setMensagem(
-      "Horários salvos com sucesso."
-    );
-
-  } catch (error) {
-
-    console.log(error);
-
-    setMensagem(
-      "Erro ao salvar horários."
-    );
+  function fecharModal() {
+    setModalConfirmacao({ aberto: false, mensagem: "", acao: null });
   }
-}
 
-
-async function carregarHorariosSemana() {
-
-  try {
-
-    const snap = await getDoc(
-      doc(
-        db,
-        "configAgenda",
-        "horariosSemana"
-      )
-    );
-
-    if (snap.exists()) {
-
-      setHorariosSemana(
-        snap.data()
-      );
-    }
-
-  } catch (error) {
-
-    console.log(error);
+  // ==========================================
+  // FUNÇÕES UTILITÁRIAS E FEEDBACK
+  // ==========================================
+  function exibirMensagem(texto, tempo = 3000) {
+    setMensagem(texto);
+    setTimeout(() => setMensagem(""), tempo);
   }
-}
 
-  
+  function imagemParaBase64(arquivo, callback) {
+    if (!arquivo) return;
+    const img = new Image();
+    const reader = new FileReader();
 
-  async function excluirAgendamento(id) {
-  const confirmar = window.confirm(
-    "Deseja excluir este agendamento?"
-  );
-
-  if (!confirmar) return;
-
-  try {
-    await deleteDoc(
-      doc(db, "agendamentos", id)
-    );
-
-    setMensagem(
-      "Agendamento removido com sucesso."
-    );
-
-    await carregarAgendamentos();
-
-  } catch (error) {
-
-    console.log(error);
-
-    setMensagem(
-      "Erro ao excluir agendamento."
-    );
+    reader.onload = (e) => { img.src = e.target.result; };
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const larguraMaxima = 900;
+      const escala = larguraMaxima / img.width;
+      canvas.width = larguraMaxima;
+      canvas.height = img.height * escala;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      const imagemComprimida = canvas.toDataURL("image/jpeg", 0.65);
+      callback(imagemComprimida);
+    };
+    reader.readAsDataURL(arquivo);
   }
-}
 
-async function excluirServico(id) {
-  const confirmar = window.confirm(
-    "Deseja excluir este serviço?"
-  );
-
-  if (!confirmar) return;
-
-  try {
-    await deleteDoc(
-      doc(db, "servicos", id)
-    );
-
-    setMensagem(
-      "Serviço removido com sucesso."
-    );
-
-    await carregarServicos();
-
-  } catch (error) {
-
-    console.log(error);
-
-    setMensagem(
-      "Erro ao excluir serviço."
-    );
+  function formatarDataBrasil(data) {
+    if (!data) return "";
+    const partes = data.split("-");
+    if (partes.length !== 3) return data;
+    return `${partes[2]}/${partes[1]}/${partes[0]}`;
   }
-}
 
+  function alternarDiaAcordeon(dataChave) {
+    setDiasAbertosExpandidos(prev => ({
+      ...prev,
+      [dataChave]: prev[dataChave] !== undefined ? !prev[dataChave] : false
+    }));
+  }
+
+  // ==========================================
+  // BUSCA INICIAL DE DADOS (READ)
+  // ==========================================
   async function carregarServicos() {
     const snap = await getDocs(collection(db, "servicos"));
-
-    setServicos(
-      snap.docs.map((d) => {
-        const dados = d.data();
-
-        return {
-          id: d.id,
-          nome: dados.nome || "",
-          descricao: dados.descricao || "",
-          preco: dados.preco || 0,
-          precoPromocional: dados.precoPromocional || 0,
-          promocaoAtiva: dados.promocaoAtiva === true,
-          imagemUrl: dados.imagemUrl || "",
-          ativo: dados.ativo === true
-        };
-      })
-    );
+    setServicos(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
   }
 
   async function carregarConfigAgenda() {
     const snap = await getDoc(doc(db, "configAgenda", "principal"));
-
-    if (snap.exists()) {
-      const dados = snap.data();
-
-      setConfigAgenda({
-        agendaAberta: dados.agendaAberta === true,
-        dataInicioAgendamento: dados.dataInicioAgendamento || "",
-        mensagemFechado:
-          dados.mensagemFechado || "Agenda indisponível no momento."
-      });
-    }
+    if (snap.exists()) setConfigAgenda((prev) => ({ ...prev, ...snap.data() }));
   }
 
   async function carregarConfigSite() {
     const snap = await getDoc(doc(db, "siteConfig", "principal"));
-
-    if (snap.exists()) {
-      const dados = snap.data();
-
-      setConfigSite({
-        nomeLoja: dados.nomeLoja || "Lays Nails Designer",
-        whatsapp: dados.whatsapp || "",
-        instagram: dados.instagram || "",
-        endereco: dados.endereco || "",
-        textoContato:
-          dados.textoContato ||
-          "Atendimento personalizado para deixar suas unhas ainda mais bonitas.",
-        heroImagem: dados.heroImagem || ""
-      });
-    }
+    if (snap.exists()) setConfigSite((prev) => ({ ...prev, ...snap.data() }));
   }
 
   async function carregarBloqueios() {
     const snap = await getDocs(collection(db, "bloqueiosAgenda"));
-
-    setBloqueios(
-      snap.docs.map((d) => ({
-        id: d.id,
-        ...d.data()
-      }))
-    );
+    setBloqueios(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
   }
 
   async function carregarGaleria() {
     const snap = await getDocs(collection(db, "galeria"));
-
-    setGaleria(
-      snap.docs.map((d) => {
-        const dados = d.data();
-
-        return {
-          id: d.id,
-          titulo: dados.titulo || "",
-          descricao: dados.descricao || "",
-          imagemUrl: dados.imagemUrl || "",
-          ativo: dados.ativo === true
-        };
-      })
-    );
+    setGaleria(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
   }
 
-  function alterarServico(index, campo, valor) {
-    const copia = [...servicos];
-    copia[index] = {
-      ...copia[index],
-      [campo]: valor
-    };
-    setServicos(copia);
-  }
-
-  function alterarNovoServico(campo, valor) {
-    setNovoServico((atual) => ({
-      ...atual,
-      [campo]: valor
-    }));
-  }
-
-  function alterarGaleria(index, campo, valor) {
-    const copia = [...galeria];
-    copia[index] = {
-      ...copia[index],
-      [campo]: valor
-    };
-    setGaleria(copia);
-  }
-
-  function alterarNovaGaleria(campo, valor) {
-    setNovaGaleria((atual) => ({
-      ...atual,
-      [campo]: valor
-    }));
-  }
-
-  function imagemParaBase64(arquivo, callback) {
-  if (!arquivo) return;
-
-  const img = new Image();
-  const reader = new FileReader();
-
-  reader.onload = (e) => {
-    img.src = e.target.result;
-  };
-
-  img.onload = () => {
-    const canvas = document.createElement("canvas");
-
-    const larguraMaxima = 900;
-    const escala = larguraMaxima / img.width;
-
-    canvas.width = larguraMaxima;
-    canvas.height = img.height * escala;
-
-    const ctx = canvas.getContext("2d");
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-    const imagemComprimida = canvas.toDataURL("image/jpeg", 0.65);
-
-    callback(imagemComprimida);
-  };
-
-  reader.readAsDataURL(arquivo);
-}
-
-  async function sairAdmin() {
-  await signOut(auth);
-  window.location.href = "/admin-login";
-}
-
-  async function salvarConfigSite() {
-    setMensagem("Salvando contato e imagem principal...");
-
-    try {
-      await setDoc(doc(db, "siteConfig", "principal"), {
-        nomeLoja: configSite.nomeLoja || "Lays Nails Designer",
-        whatsapp: configSite.whatsapp || "",
-        instagram: configSite.instagram || "",
-        endereco: configSite.endereco || "",
-        textoContato: configSite.textoContato || "",
-        heroImagem: configSite.heroImagem || ""
+  async function carregarHorariosSemana() {
+    const snap = await getDoc(doc(db, "configAgenda", "horariosSemana"));
+    if (snap.exists()) {
+      setHorariosSemana(snap.data());
+    } else {
+      const defaultHorarios = {};
+      diasSemanaIniciais.forEach(dia => {
+        defaultHorarios[dia] = { fechado: false, horarios: ["08:00", "09:00"] };
       });
+      setHorariosSemana(defaultHorarios);
+    }
+  }
 
-      setMensagem("Configurações do site salvas com sucesso.");
-      await carregarConfigSite();
+  async function carregarHorariosAdmin() {
+    const snap = await getDoc(doc(db, "configAgenda", "horarios"));
+    if (snap.exists() && Array.isArray(snap.data().lista)) {
+      setHorariosAdmin(snap.data().lista);
+    } else {
+      setHorariosAdmin([]);
+    }
+  }
+
+  // ==========================================
+  // EFEITOS (LIFECYCLE)
+  // ==========================================
+  useEffect(() => {
+    carregarServicos();
+    carregarConfigAgenda();
+    carregarConfigSite();
+    carregarBloqueios();
+    carregarGaleria();
+    carregarHorariosSemana();
+    carregarHorariosAdmin();
+
+    // Listener Real-time para Agendamentos
+    const unsub = onSnapshot(collection(db, "agendamentos"), (snap) => {
+      const lista = snap.docs
+        .map((d) => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => (b.criadoEm?.seconds || 0) - (a.criadoEm?.seconds || 0));
+      setAgendamentos(lista);
+    });
+
+    return () => unsub();
+  }, []);
+
+  // ==========================================
+  // OPERAÇÕES DE MUTAÇÃO (CREATE, UPDATE, DELETE)
+  // ==========================================
+  async function sairAdmin() {
+    await signOut(auth);
+    window.location.href = "/admin-login";
+  }
+
+  // --- CONFIGURAÇÕES DO SITE ---
+  async function salvarConfigSite() {
+    try {
+      exibirMensagem("Salvando configurações do site...");
+      await setDoc(doc(db, "siteConfig", "principal"), configSite);
+      exibirMensagem("Configurações do site salvas com sucesso.");
     } catch (error) {
-      setMensagem(`Erro ao salvar contato: ${error.message}`);
+      exibirMensagem(`Erro ao salvar contato: ${error.message}`);
+    }
+  }
+
+  // --- SERVIÇOS ---
+  async function criarServico() {
+    if (!novoServico.nome || !novoServico.preco) {
+      exibirMensagem("Preencha pelo menos nome e preço.");
+      return;
+    }
+    try {
+      exibirMensagem("Criando serviço...");
+      await addDoc(collection(db, "servicos"), novoServico);
+      setNovoServico(servicoVazio);
+      await carregarServicos();
+      exibirMensagem("Novo serviço criado com sucesso.");
+    } catch (error) {
+      exibirMensagem(`Erro ao criar serviço: ${error.message}`);
     }
   }
 
   async function salvarServico(servico) {
-
-  try {
-
-    await updateDoc(
-      doc(db, "servicos", servico.id),
-      {
-        nome: String(servico.nome || ""),
-        descricao: String(
-          servico.descricao || ""
-        ),
-
-        preco: Number(
-          servico.preco || 0
-        ),
-
-        precoPromocional: Number(
-          servico.precoPromocional || 0
-        ),
-
-        promocaoAtiva:
-          servico.promocaoAtiva === true,
-
-        imagemUrl: String(
-          servico.imagemUrl || ""
-        ),
-
-        ativo:
-          servico.ativo === true
-      }
-    );
-
-    setMensagem(
-      `Serviço "${servico.nome}" salvo com sucesso.`
-    );
-
-    setTimeout(() => {
-      setMensagem("");
-    }, 2500);
-
-  } catch (error) {
-
-    console.log(error);
-
-    setMensagem(
-      "Erro ao salvar serviço."
-    );
-  }
-}
-
-  async function criarServico() {
-    setMensagem("Criando serviço...");
-
-    if (!novoServico.nome || !novoServico.preco) {
-      setMensagem("Preencha pelo menos nome e preço.");
-      return;
-    }
-
     try {
-      await addDoc(collection(db, "servicos"), {
-        nome: String(novoServico.nome || ""),
-        descricao: String(novoServico.descricao || ""),
-        preco: Number(novoServico.preco || 0),
-        precoPromocional: Number(novoServico.precoPromocional || 0),
-        promocaoAtiva: novoServico.promocaoAtiva === true,
-        imagemUrl: String(novoServico.imagemUrl || ""),
-        ativo: novoServico.ativo === true
-      });
+      exibirMensagem(`Salvando "${servico.nome}"...`);
+      await updateDoc(doc(db, "servicos", servico.id), servico);
+      exibirMensagem(`Serviço "${servico.nome}" salvo com sucesso.`);
+    } catch (error) {
+      exibirMensagem("Erro ao salvar serviço.");
+    }
+  }
 
-      setNovoServico(servicoVazio);
-      setMensagem("Novo serviço criado com sucesso.");
+  async function excluirServico(id) {
+    try {
+      await deleteDoc(doc(db, "servicos", id));
       await carregarServicos();
+      exibirMensagem("Serviço removido com sucesso.");
     } catch (error) {
-      setMensagem(`Erro ao criar serviço: ${error.message}`);
+      exibirMensagem("Erro ao excluir serviço.");
     }
   }
 
+  function alterarServico(index, campo, valor) {
+    const copia = [...servicos];
+    copia[index] = { ...copia[index], [campo]: valor };
+    setServicos(copia);
+  }
+
+  // --- AGENDA E BLOQUEIOS ---
   async function salvarConfigAgenda() {
-    setMensagem("Salvando controle da agenda...");
-
     try {
-      await setDoc(doc(db, "configAgenda", "principal"), {
-        agendaAberta: configAgenda.agendaAberta === true,
-        dataInicioAgendamento: configAgenda.dataInicioAgendamento || "",
-        mensagemFechado:
-          configAgenda.mensagemFechado || "Agenda indisponível no momento."
-      });
-
-      setMensagem("Controle da agenda salvo com sucesso.");
-      await carregarConfigAgenda();
+      exibirMensagem("Salvando controle da agenda...");
+      await setDoc(doc(db, "configAgenda", "principal"), configAgenda);
+      exibirMensagem("Controle da agenda salvo com sucesso.");
     } catch (error) {
-      setMensagem(`Erro ao salvar agenda: ${error.message}`);
+      exibirMensagem(`Erro ao salvar agenda: ${error.message}`);
+    }
+  }
+
+  async function salvarHorariosSemana() {
+    try {
+      await setDoc(doc(db, "configAgenda", "horariosSemana"), horariosSemana);
+      exibirMensagem("Horários salvos com sucesso.");
+    } catch (error) {
+      exibirMensagem("Erro ao salvar horários.");
     }
   }
 
   async function criarBloqueio() {
-    setMensagem("Criando bloqueio...");
-
     if (!novoBloqueio.dataInicio || !novoBloqueio.motivo) {
-      setMensagem("Preencha data inicial e motivo do bloqueio.");
+      exibirMensagem("Preencha data inicial e motivo do bloqueio.");
       return;
     }
-
     try {
+      exibirMensagem("Criando bloqueio...");
       await addDoc(collection(db, "bloqueiosAgenda"), {
-        dataInicio: novoBloqueio.dataInicio,
+        ...novoBloqueio,
         dataFim: novoBloqueio.dataFim || novoBloqueio.dataInicio,
         horario: novoBloqueio.diaTodo ? "" : novoBloqueio.horario,
-        motivo: novoBloqueio.motivo,
-        diaTodo: novoBloqueio.diaTodo === true,
-        ativo: novoBloqueio.ativo === true,
         criadoEm: new Date()
       });
-
       setNovoBloqueio(bloqueioVazio);
-      setMensagem("Bloqueio criado com sucesso.");
       await carregarBloqueios();
+      exibirMensagem("Bloqueio criado com sucesso.");
     } catch (error) {
-      setMensagem(`Erro ao criar bloqueio: ${error.message}`);
+      exibirMensagem(`Erro ao criar bloqueio: ${error.message}`);
     }
   }
 
   async function removerBloqueio(id) {
     try {
       await deleteDoc(doc(db, "bloqueiosAgenda", id));
-      setMensagem("Bloqueio removido.");
       await carregarBloqueios();
+      exibirMensagem("Bloqueio removido.");
     } catch (error) {
-      setMensagem(`Erro ao remover bloqueio: ${error.message}`);
+      exibirMensagem(`Erro ao remover bloqueio: ${error.message}`);
     }
   }
 
-  function formatarDataBrasil(data) {
-
-  if (!data) return "";
-
-  const partes = data.split("-");
-
-  if (partes.length !== 3) {
-    return data;
-  }
-
-  return `${partes[2]}/${partes[1]}/${partes[0]}`;
-}
-
+  // --- GALERIA ---
   async function criarGaleria() {
-    setMensagem("Adicionando foto...");
-
     if (!novaGaleria.imagemUrl) {
-      setMensagem("Escolha uma imagem para a galeria.");
+      exibirMensagem("Escolha uma imagem para a galeria.");
       return;
     }
-
     try {
-      await addDoc(collection(db, "galeria"), {
-        titulo: novaGaleria.titulo || "",
-        descricao: novaGaleria.descricao || "",
-        imagemUrl: novaGaleria.imagemUrl || "",
-        ativo: novaGaleria.ativo === true,
-        criadoEm: new Date()
-      });
-
+      exibirMensagem("Adicionando foto...");
+      await addDoc(collection(db, "galeria"), { ...novaGaleria, criadoEm: new Date() });
       setNovaGaleria(galeriaVazia);
-      setMensagem("Foto adicionada à galeria.");
       await carregarGaleria();
+      exibirMensagem("Foto adicionada à galeria.");
     } catch (error) {
-      setMensagem(`Erro ao adicionar foto: ${error.message}`);
+      exibirMensagem(`Erro ao adicionar foto: ${error.message}`);
     }
   }
 
- async function salvarGaleria(item) {
-  try {
-
-    // feedback instantâneo
-    setMensagem(`Salvando "${item.titulo || "foto"}"...`);
-
-    // salva SOMENTE o item alterado
-    await updateDoc(
-      doc(db, "galeria", item.id),
-      {
-        titulo: String(item.titulo || ""),
-        descricao: String(item.descricao || ""),
-        imagemUrl: String(item.imagemUrl || ""),
-        ativo: item.ativo === true
-      }
-    );
-
-    // NÃO recarrega toda galeria
-    // await carregarGaleria();
-
-    setMensagem("Foto salva com sucesso.");
-
-    // limpa mensagem depois
-    setTimeout(() => {
-      setMensagem("");
-    }, 2500);
-
-  } catch (error) {
-
-    console.log(error);
-
-    setMensagem(
-      `Erro ao salvar foto: ${error.message}`
-    );
+  async function salvarGaleria(item) {
+    try {
+      exibirMensagem(`Salvando "${item.titulo || "foto"}"...`);
+      await updateDoc(doc(db, "galeria", item.id), item);
+      exibirMensagem("Foto salva com sucesso.");
+    } catch (error) {
+      exibirMensagem(`Erro ao salvar foto: ${error.message}`);
+    }
   }
-}
 
   async function removerGaleria(id) {
-
-  const confirmar = window.confirm(
-    "Deseja remover esta foto?"
-  );
-
-  if (!confirmar) return;
-
-  try {
-
-    await deleteDoc(
-      doc(db, "galeria", id)
-    );
-
-    // remove da tela sem reload
-    setGaleria((atual) =>
-      atual.filter((item) => item.id !== id)
-    );
-
-    setMensagem("Foto removida.");
-
-    setTimeout(() => {
-      setMensagem("");
-    }, 2500);
-
-  } catch (error) {
-
-    console.log(error);
-
-    setMensagem(
-      `Erro ao remover foto: ${error.message}`
-    );
-  }
-}
-
-  async function alterarStatus(id, status) {
     try {
-      await updateDoc(doc(db, "agendamentos", id), {
-        status
-      });
-
-      setMensagem("Status atualizado com sucesso.");
-      await carregarAgendamentos();
+      await deleteDoc(doc(db, "galeria", id));
+      setGaleria((atual) => atual.filter((item) => item.id !== id));
+      exibirMensagem("Foto removida.");
     } catch (error) {
-      setMensagem(`Erro ao atualizar: ${error.message}`);
+      exibirMensagem(`Erro ao remover foto: ${error.message}`);
     }
   }
 
+  function alterarGaleria(index, campo, valor) {
+    const copia = [...galeria];
+    copia[index] = { ...copia[index], [campo]: valor };
+    setGaleria(copia);
+  }
+
+  // --- AGENDAMENTOS ---
+  async function alterarStatus(id, status) {
+    try {
+      await updateDoc(doc(db, "agendamentos", id), { status });
+      exibirMensagem(`Status atualizado para: ${status}`);
+    } catch (error) {
+      exibirMensagem(`Erro ao atualizar: ${error.message}`);
+    }
+  }
+
+  async function excluirAgendamento(id) {
+    try {
+      await deleteDoc(doc(db, "agendamentos", id));
+      exibirMensagem("Agendamento removido com sucesso.");
+    } catch (error) {
+      exibirMensagem("Erro ao excluir agendamento.");
+    }
+  }
 
   function chamarClienteWhatsApp(item) {
-  // Remove qualquer caractere que não seja número do telefone
-  const telefone = String(item.clienteTelefone || "").replace(/\D/g, "");
+    const telefone = String(item.clienteTelefone || "").replace(/\D/g, "");
+    const dataBrasil = item.data && item.data.includes("-")
+      ? item.data.split("-").reverse().join("/")
+      : item.data;
+    const valorFormatated = item.valor
+      ? Number(item.valor).toFixed(2).replace(".", ",")
+      : "0,00";
 
-  // MÁGICA AQUI: Converte a data de AAAA-MM-DD para DD/MM/AAAA
-  const dataBrasil = item.data && item.data.includes("-") 
-    ? item.data.split("-").reverse().join("/") 
-    : item.data;
-
-  // Formata o valor para o padrão de dinheiro do Brasil (Ex: R$ 80,00)
-  const valorFormatado = item.valor 
-    ? Number(item.valor).toFixed(2).replace(".", ",") 
-    : "0,00";
-
-  // Mensagem premium atualizada (sem a cobrança dos 40%)
-  const texto = encodeURIComponent(
+    const texto = encodeURIComponent(
 `Olá ${item.clienteNome}, tudo bem? 
 
 Aqui é a Lays Nails Designer. É um prazer imenso receber você! Seu horário já está confirmado com muito carinho em nossa agenda:
 
  Serviço: ${item.servicoNome}
  Data: ${dataBrasil} às ${item.horario}
- Valor: R$ ${valorFormatado}
+ Valor: R$ ${valorFormatated}
 
 Já deixei tudo preparado exclusivamente para o seu atendimento. Se precisar de qualquer alteração, é só me avisar por aqui.
 
 Mal posso esperar para deixar suas unhas perfeitas! Nos vemos em breve? `
-  );
-
-  window.location.href =
-  `https://wa.me/55${numeroLoja}?text=${texto}`;
-}
-
-  const abertos = agendamentos.filter(
-    (a) => a.status === "agendado" || a.status === "confirmado"
-  );
-
-  const concluidos = agendamentos.filter((a) => a.status === "concluido");
-  const cancelados = agendamentos.filter((a) => a.status === "cancelado");
-
-  const faturamento = concluidos.reduce(
-    (acc, item) => acc + Number(item.valor || 0),
-    0
-  );
-
-
-  async function carregarHorariosAdmin() {
-
-  try {
-
-    const snap = await getDoc(
-      doc(db, "configAgenda", "horarios")
     );
 
-    if (snap.exists()) {
-
-      const dados = snap.data();
-
-      setHorariosAdmin(
-        Array.isArray(dados.lista)
-          ? dados.lista
-          : []
-      );
-
-    } else {
-
-      setHorariosAdmin([]);
-    }
-
-  } catch (error) {
-
-    console.log(error);
-
-    setHorariosAdmin([]);
+    const telefoneDestino = telefone || configSite.whatsapp; 
+    window.open(`https://wa.me/55${telefoneDestino}?text=${texto}`, "_blank");
   }
-}
 
+  // ==========================================
+  // CÁLCULOS DERIVADOS (ESTATÍSTICAS E GRUPOS)
+  // ==========================================
+  const abertos = agendamentos.filter((a) => a.status === "agendado" || a.status === "confirmado");
+  const concluidos = agendamentos.filter((a) => a.status === "concluido");
+  const cancelados = agendamentos.filter((a) => a.status === "cancelado");
+  const faturamento = concluidos.reduce((acc, item) => acc + Number(item.valor || 0), 0);
 
- useEffect(() => {
-
-  carregarServicos();
-
-  carregarConfigAgenda();
-
-  carregarConfigSite();
-
-  carregarBloqueios();
-
-  carregarGaleria();
-
-  carregarHorariosSemana();
-
-  carregarHorariosAdmin();
-
-  const q = collection(
-    db,
-    "agendamentos"
-  );
-
-  const unsub = onSnapshot(
-    q,
-    (snap) => {
-
-      const lista =
-        snap.docs
-          .map((d) => ({
-            id: d.id,
-            ...d.data()
-          }))
-
-          .sort((a, b) => {
-
-            const dataA =
-              a.criadoEm?.seconds || 0;
-
-            const dataB =
-              b.criadoEm?.seconds || 0;
-
-            return dataB - dataA;
-          });
-
-      setAgendamentos(lista);
+  const abertosPorDia = abertos.reduce((acc, item) => {
+    const dataAlvo = item.data || "Sem Data";
+    if (!acc[dataAlvo]) {
+      acc[dataAlvo] = [];
     }
-  );
+    acc[dataAlvo].push(item);
+    return acc;
+  }, {});
 
-  return () => {
+  const datasOrdenadas = Object.keys(abertosPorDia).sort((a, b) => new Date(a) - new Date(b));
 
-    unsub();
-  };
+  // O primeiro dia carrega aberto por padrão se o estado ainda não foi definido
+  if (datasOrdenadas.length > 0 && diasAbertosExpandidos[datasOrdenadas[0]] === undefined) {
+    setDiasAbertosExpandidos({ [datasOrdenadas[0]]: true });
+  }
 
-}, []);
-
+  // ==========================================
+  // RENDERIZAÇÃO
+  // ==========================================
   return (
-   <div className="adminPage adminPremium">
+    <div className="adminPage adminPremium">
 
-  <div className="adminTopBar">
-
-    <div>
-      <span className="adminEyebrow">
-        Lays Nails Designer
-      </span>
-
-      <h1>
-        Painel Admin
-      </h1>
-
-      <p>
-        Controle serviços, agenda,
-        galeria, contato e faturamento.
-      </p>
-    </div>
-
-    <div className="adminTopActions">
-
-      <div
-        className={
-          configAgenda.agendaAberta
-            ? "storeOpen"
-            : "storeClosed"
-        }
-      >
-        {configAgenda.agendaAberta
-          ? "Agenda aberta"
-          : "Agenda fechada"}
-      </div>
-
-      <button
-        type="button"
-        className="logoutBtn"
-        onClick={sairAdmin}
-      >
-        Sair
-      </button>
-
-    </div>
-
-  </div>
-
-  <div className="adminMenu">
-
-    
-
-    <a href="#site">
-      Site
-    </a>
-
-    <a href="#galeriaAdmin">
-      Galeria
-    </a>
-
-    <a href="#agenda">
-      Agenda
-    </a>
-
-    <a href="#abertos">
-      Abertos
-    </a>
-
-    <a href="#concluidos">
-      Concluídos
-    </a>
-
-    <a href="#cancelados">
-      Cancelados
-    </a>
-
-    <a href="#servicosAdmin">
-      Serviços
-    </a>
-
-  </div>
-
-
-
-<h2 className="adminTitle">
-  Horários por dia
-</h2>
-
-<div className="agendaDiasGrid">
-
-  {diasSemana.map((dia) => (
-
-    <div
-      key={dia}
-      className="agendaDiaCard"
-    >
-
-      <h3>
-        {dia}
-      </h3>
-
-      <label className="checkLine">
-
-        <input
-          type="checkbox"
-
-          checked={
-            horariosSemana[dia]
-              ?.fechado || false
-          }
-
-          onChange={(e) => {
-
-            setHorariosSemana((atual) => ({
-              ...atual,
-
-              [dia]: {
-                ...atual[dia],
-
-                fechado:
-                  e.target.checked
-              }
-            }));
-          }}
-        />
-
-        Dia fechado
-
-      </label>
-
-      <textarea
-        placeholder="08:00,09:00,10:00"
-
-        value={
-          horariosSemana[dia]
-            ?.horarios
-            ?.join(",") || ""
-        }
-
-        onChange={(e) => {
-
-          const lista =
-            e.target.value
-              .split(",")
-
-              .map((h) =>
-                h.trim()
-              )
-
-              .filter(Boolean);
-
-          setHorariosSemana((atual) => ({
-            ...atual,
-
-            [dia]: {
-              ...atual[dia],
-
-              horarios: lista
-            }
-          }));
-        }}
-      />
-
-    </div>
-  ))}
-</div>
-
-<button
-  onClick={salvarHorariosSemana}
->
-  Salvar horários
-</button>
-
-
-
-<div className="agendaControlCard">
-
-  {horariosAdmin.map((h, index) => (
-
-    <div
-      key={index}
-      style={{
-        display: "flex",
-        gap: 10,
-        marginBottom: 10
-      }}
-    >
-
-      
-
-      
-
-    </div>
-  ))}
-
-
-
-</div>
-      {mensagem && (
-        <div className="adminMessage">
-          {mensagem}
+      {/* --- MODAL DE CONFIRMAÇÃO GLOBAL --- */}
+      {modalConfirmacao.aberto && (
+        <div style={{
+          position: "fixed", top: 0, left: 0, width: "100%", height: "100%",
+          backgroundColor: "rgba(0,0,0,0.7)", zIndex: 9999, display: "flex",
+          justifyContent: "center", alignItems: "center", padding: "20px",
+          backdropFilter: "blur(3px)"
+        }}>
+          <div style={{
+            background: "#fff", padding: "30px", borderRadius: "15px",
+            maxWidth: "400px", width: "100%", textAlign: "center",
+            boxShadow: "0 10px 30px rgba(0,0,0,0.3)"
+          }}>
+            <h3 style={{ margin: "0 0 15px 0", color: "#333", fontSize: "1.4rem" }}>Confirmar Ação</h3>
+            <p style={{ color: "#555", marginBottom: "25px", fontSize: "1.1rem", lineHeight: "1.4" }}>
+              {modalConfirmacao.mensagem}
+            </p>
+            <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
+              <button 
+                onClick={fecharModal} 
+                style={{ flex: 1, background: "#e0e0e0", color: "#333", padding: "12px", borderRadius: "8px", border: "none", fontWeight: "bold", cursor: "pointer", fontSize: "1rem" }}
+              >
+                Cancelar
+              </button>
+              <button 
+                onClick={executarConfirmacao} 
+                style={{ flex: 1, background: "var(--accent-color, #d4a373)", color: "#fff", padding: "12px", borderRadius: "8px", border: "none", fontWeight: "bold", cursor: "pointer", fontSize: "1rem" }}
+              >
+                Sim, Continuar
+              </button>
+            </div>
+          </div>
         </div>
       )}
+      
+      {/* --- TOPO --- */}
+      <div className="adminTopBar">
+        <div>
+          <span className="adminEyebrow">{configSite.nomeLoja}</span>
+          <h1>Painel Admin</h1>
+          <p>Controle serviços, agenda, galeria, contato e faturamento.</p>
+        </div>
+        <div className="adminTopActions">
+          <div className={configAgenda.agendaAberta ? "storeOpen" : "storeClosed"}>
+            {configAgenda.agendaAberta ? "Agenda aberta" : "Agenda fechada"}
+          </div>
+          <button type="button" className="logoutBtn" onClick={() => pedirConfirmacao("Deseja realmente sair da sua conta administrativa?", sairAdmin)}>
+            Sair
+          </button>
+        </div>
+      </div>
 
+      {/* --- MENU ÂNCORA --- */}
+      <div className="adminMenu">
+        <a href="#site">Site</a>
+        <a href="#galeriaAdmin">Galeria</a>
+        <a href="#agenda">Agenda</a>
+        <a href="#abertos">Abertos</a>
+        <a href="#concluidos">Concluídos</a>
+        <a href="#cancelados">Cancelados</a>
+        <a href="#servicosAdmin">Serviços</a>
+      </div>
+
+      {/* --- FEEDBACK FLUTUANTE --- */}
+      {mensagem && <div className="adminMessage">{mensagem}</div>}
+
+      {/* --- DASHBOARD ESTATÍSTICAS --- */}
       <div className="statsGrid premiumStats">
         <div className="statCard">
           <span>Em aberto</span>
           <strong>{abertos.length}</strong>
         </div>
-
         <div className="statCard successCard">
-  <div className="statTop">
-    <span>Concluídos</span>
-
-    <div className="statIcon">
-      ✓
-    </div>
-  </div>
-
-  <strong>
-    {concluidos.length}
-  </strong>
-
-  <small>
-    Serviços finalizados
-  </small>
-</div>
-
+          <div className="statTop">
+            <span>Concluídos</span>
+            <div className="statIcon">✓</div>
+          </div>
+          <strong>{concluidos.length}</strong>
+          <small>Serviços finalizados</small>
+        </div>
         <div className="statCard">
           <span>Cancelados</span>
           <strong>{cancelados.length}</strong>
         </div>
-
         <div className="statCard statMoney">
-          <span>Faturamento</span>
-          <strong>R$ {faturamento.toFixed(2)}</strong>
+          <span>Faturamento Global</span>
+          <strong>R$ {faturamento.toFixed(2).replace(".", ",")}</strong>
         </div>
       </div>
 
-      <h2 id="site" className="adminTitle">
-  Configurações do site
-</h2>
-
+      {/* --- CONFIGURAÇÕES DO SITE --- */}
+      <h2 id="site" className="adminTitle">Configurações do site</h2>
       <div className="agendaControlGrid">
         <div className="agendaControlCard">
           <label className="formLabel">Nome da loja</label>
           <input
             value={configSite.nomeLoja}
-            onChange={(e) =>
-              setConfigSite((a) => ({
-                ...a,
-                nomeLoja: e.target.value
-              }))
-            }
+            onChange={(e) => setConfigSite({ ...configSite, nomeLoja: e.target.value })}
           />
 
-          <label className="formLabel">WhatsApp</label>
+          <label className="formLabel">WhatsApp de Contato (Seu número)</label>
           <input
             value={configSite.whatsapp}
-            onChange={(e) =>
-              setConfigSite((a) => ({
-                ...a,
-                whatsapp: e.target.value.replace(/\D/g, "")
-              }))
-            }
+            onChange={(e) => setConfigSite({ ...configSite, whatsapp: e.target.value.replace(/\D/g, "") })}
           />
 
-          <label className="formLabel">Instagram</label>
+          <label className="formLabel">Instagram (Apenas o @usuario)</label>
           <input
             value={configSite.instagram}
-            onChange={(e) =>
-              setConfigSite((a) => ({
-                ...a,
-                instagram: e.target.value
-              }))
-            }
+            onChange={(e) => setConfigSite({ ...configSite, instagram: e.target.value })}
           />
 
-          <label className="formLabel">Endereço</label>
+          <label className="formLabel">Endereço Completo</label>
           <input
             value={configSite.endereco}
-            onChange={(e) =>
-              setConfigSite((a) => ({
-                ...a,
-                endereco: e.target.value
-              }))
-            }
+            onChange={(e) => setConfigSite({ ...configSite, endereco: e.target.value })}
           />
 
-          <label className="formLabel">Texto do contato</label>
+          <label className="formLabel">Texto de Apresentação</label>
           <textarea
             value={configSite.textoContato}
-            onChange={(e) =>
-              setConfigSite((a) => ({
-                ...a,
-                textoContato: e.target.value
-              }))
-            }
+            onChange={(e) => setConfigSite({ ...configSite, textoContato: e.target.value })}
           />
 
-          <label className="formLabel">Imagem principal do topo</label>
-
+          <label className="formLabel">Imagem Principal (Topo do site)</label>
           <div className="imagePreview">
             {configSite.heroImagem ? (
-              <img src={configSite.heroImagem} alt="" />
+              <img src={configSite.heroImagem} alt="Capa" />
             ) : (
-              <span>Sem imagem</span>
+              <span>Nenhuma imagem enviada</span>
             )}
           </div>
-
           <label className="uploadBox">
-            Escolher imagem principal
+            Escolher nova imagem
             <input
               type="file"
               accept="image/*"
-              onChange={(e) =>
-                imagemParaBase64(e.target.files?.[0], (base64) =>
-                  setConfigSite((a) => ({
-                    ...a,
-                    heroImagem: base64
-                  }))
-                )
-              }
+              onChange={(e) => imagemParaBase64(e.target.files?.[0], (base64) =>
+                setConfigSite({ ...configSite, heroImagem: base64 })
+              )}
             />
           </label>
 
-          <button type="button" onClick={salvarConfigSite}>
-            Salvar configurações
+          <button type="button" onClick={() => pedirConfirmacao("Tem certeza que deseja salvar essas informações no site ao vivo?", salvarConfigSite)}>
+            Salvar Configurações Visuais
           </button>
         </div>
       </div>
 
-      <h2 id="galeriaAdmin" className="adminTitle">
-  Galeria / Prova social
-</h2>
-
+      {/* --- GALERIA DE FOTOS --- */}
+      <h2 id="galeriaAdmin" className="adminTitle">Galeria / Prova Social</h2>
       <div className="servicesAdminGrid">
         <div className="serviceAdminCard premiumForm">
+          <h3 style={{marginTop: 0}}>Adicionar Nova Foto</h3>
           <div className="imagePreview">
-            {novaGaleria.imagemUrl ? (
-              <img src={novaGaleria.imagemUrl} alt="" />
-            ) : (
-              <span>Nova foto</span>
-            )}
+            {novaGaleria.imagemUrl ? <img src={novaGaleria.imagemUrl} alt="Preview" /> : <span>Pré-visualização</span>}
           </div>
-
           <label className="uploadBox">
-            Escolher imagem da galeria
+            Carregar Imagem
             <input
               type="file"
               accept="image/*"
-              onChange={(e) =>
-                imagemParaBase64(e.target.files?.[0], (base64) =>
-                  alterarNovaGaleria("imagemUrl", base64)
-                )
-              }
+              onChange={(e) => imagemParaBase64(e.target.files?.[0], (base64) => setNovaGaleria({ ...novaGaleria, imagemUrl: base64 }))}
             />
           </label>
-
           <input
-            placeholder="Título"
+            placeholder="Título (Ex: Alongamento em Gel)"
             value={novaGaleria.titulo}
-            onChange={(e) => alterarNovaGaleria("titulo", e.target.value)}
+            onChange={(e) => setNovaGaleria({ ...novaGaleria, titulo: e.target.value })}
           />
-
           <textarea
-            placeholder="Descrição"
+            placeholder="Descrição breve do serviço feito"
             value={novaGaleria.descricao}
-            onChange={(e) => alterarNovaGaleria("descricao", e.target.value)}
+            onChange={(e) => setNovaGaleria({ ...novaGaleria, descricao: e.target.value })}
           />
-
           <label className="checkLine">
             <input
               type="checkbox"
               checked={novaGaleria.ativo}
-              onChange={(e) => alterarNovaGaleria("ativo", e.target.checked)}
+              onChange={(e) => setNovaGaleria({ ...novaGaleria, ativo: e.target.checked })}
             />
-            Foto ativa
+            Exibir no site
           </label>
-
-          <button type="button" onClick={criarGaleria}>
-            Adicionar à galeria
+          <button type="button" onClick={() => pedirConfirmacao("Deseja publicar esta foto na galeria do site?", criarGaleria)}>
+            Adicionar à Galeria
           </button>
         </div>
 
         {galeria.map((item, index) => (
           <div className="serviceAdminCard premiumForm" key={item.id}>
             <div className="imagePreview">
-              {item.imagemUrl ? (
-                <img src={item.imagemUrl} alt="" />
-              ) : (
-                <span>Sem imagem</span>
-              )}
+              {item.imagemUrl ? <img src={item.imagemUrl} alt="Galeria" /> : <span>Sem imagem</span>}
             </div>
-
             <label className="uploadBox">
               Trocar imagem
               <input
                 type="file"
                 accept="image/*"
-                onChange={(e) =>
-                  imagemParaBase64(e.target.files?.[0], (base64) =>
-                    alterarGaleria(index, "imagemUrl", base64)
-                  )
-                }
+                onChange={(e) => imagemParaBase64(e.target.files?.[0], (base64) => alterarGaleria(index, "imagemUrl", base64))}
               />
             </label>
-
             <input
               value={item.titulo}
               onChange={(e) => alterarGaleria(index, "titulo", e.target.value)}
             />
-
             <textarea
               value={item.descricao}
               onChange={(e) => alterarGaleria(index, "descricao", e.target.value)}
             />
-
             <label className="checkLine">
               <input
                 type="checkbox"
                 checked={item.ativo}
                 onChange={(e) => alterarGaleria(index, "ativo", e.target.checked)}
               />
-              Foto ativa
+              Exibir no site
             </label>
-
-            <button type="button" onClick={() => salvarGaleria(item)}>
-              Salvar foto
-            </button>
-
-            <button
-              type="button"
-              className="dangerFullBtn"
-              onClick={() => removerGaleria(item.id)}
-            >
-              Remover foto
-            </button>
+            <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+              <button type="button" onClick={() => pedirConfirmacao("Salvar as alterações desta foto?", () => salvarGaleria(item))} style={{ flex: 1 }}>Salvar</button>
+              <button type="button" className="dangerFullBtn" onClick={() => pedirConfirmacao("Tem certeza que deseja apagar esta foto do site?", () => removerGaleria(item.id))} style={{ flex: 1 }}>Remover</button>
+            </div>
           </div>
         ))}
       </div>
 
-      <h2 id="agenda" className="adminTitle">
-  Controle de Agenda
-</h2>
+      {/* --- AGENDA: CONTROLE E BLOQUEIOS --- */}
+      <h2 id="agenda" className="adminTitle">Controle de Agenda Diária</h2>
+      
+      <div className="agendaDiasGrid">
+        {diasSemanaIniciais.map((dia) => (
+          <div key={dia} className="agendaDiaCard">
+            <h3 style={{ textTransform: "capitalize" }}>{dia}</h3>
+            <label className="checkLine">
+              <input
+                type="checkbox"
+                checked={horariosSemana[dia]?.fechado || false}
+                onChange={(e) => setHorariosSemana({
+                  ...horariosSemana,
+                  [dia]: { ...horariosSemana[dia], fechado: e.target.checked }
+                })}
+              />
+              Dia Fechado (sem atendimento)
+            </label>
+            <textarea
+              placeholder="08:00, 09:00, 10:00"
+              value={horariosSemana[dia]?.horarios?.join(", ") || ""}
+              disabled={horariosSemana[dia]?.fechado}
+              onChange={(e) => {
+                const lista = e.target.value.split(",").map((h) => h.trim()).filter(Boolean);
+                setHorariosSemana({
+                  ...horariosSemana,
+                  [dia]: { ...horariosSemana[dia], horarios: lista }
+                });
+              }}
+            />
+          </div>
+        ))}
+      </div>
+      <button style={{ marginBottom: "2rem" }} onClick={() => pedirConfirmacao("Salvar todas as regras de horários da semana?", salvarHorariosSemana)}>
+        Salvar Horários da Semana
+      </button>
 
       <div className="agendaControlGrid">
         <div className="agendaControlCard">
@@ -1336,446 +726,141 @@ Mal posso esperar para deixar suas unhas perfeitas! Nos vemos em breve? `
             <input
               type="checkbox"
               checked={configAgenda.agendaAberta}
-              onChange={(e) =>
-                setConfigAgenda((a) => ({
-                  ...a,
-                  agendaAberta: e.target.checked
-                }))
-              }
+              onChange={(e) => setConfigAgenda({ ...configAgenda, agendaAberta: e.target.checked })}
             />
-
             <div>
-              <strong>Agenda aberta</strong>
-              <span>Desative para impedir novos agendamentos.</span>
+              <strong>Abertura Geral da Agenda</strong>
+              <span>Desative para interromper agendamentos totalmente no site.</span>
             </div>
           </label>
-
-          <label className="formLabel">Agendar somente a partir de</label>
+          <label className="formLabel">A partir de qual data o cliente pode agendar?</label>
           <input
             type="date"
             value={configAgenda.dataInicioAgendamento}
-            onChange={(e) =>
-              setConfigAgenda((a) => ({
-                ...a,
-                dataInicioAgendamento: e.target.value
-              }))
-            }
+            onChange={(e) => setConfigAgenda({ ...configAgenda, dataInicioAgendamento: e.target.value })}
           />
-
-          <label className="formLabel">Mensagem quando fechado</label>
+          <label className="formLabel">Aviso quando a agenda estiver fechada</label>
           <textarea
             value={configAgenda.mensagemFechado}
-            onChange={(e) =>
-              setConfigAgenda((a) => ({
-                ...a,
-                mensagemFechado: e.target.value
-              }))
-            }
+            onChange={(e) => setConfigAgenda({ ...configAgenda, mensagemFechado: e.target.value })}
           />
-
-          <button type="button" onClick={salvarConfigAgenda}>
-            Salvar controle da agenda
-          </button>
+          <button type="button" onClick={() => pedirConfirmacao("Deseja aplicar estas regras gerais na agenda?", salvarConfigAgenda)}>Salvar Regras de Agenda</button>
         </div>
 
         <div className="agendaControlCard">
-          <h3>Novo bloqueio</h3>
-
-          <label className="formLabel">Data inicial</label>
+          <h3>Cadastrar Bloqueio Temporário (Férias/Feriados)</h3>
+          <label className="formLabel">Data de Início</label>
           <input
             type="date"
             value={novoBloqueio.dataInicio}
-            onChange={(e) =>
-              setNovoBloqueio((a) => ({
-                ...a,
-                dataInicio: e.target.value
-              }))
-            }
+            onChange={(e) => setNovoBloqueio({ ...novoBloqueio, dataInicio: e.target.value })}
           />
-
-          <label className="formLabel">Data final</label>
+          <label className="formLabel">Data Final (Deixe em branco se for só um dia)</label>
           <input
             type="date"
             value={novoBloqueio.dataFim}
-            onChange={(e) =>
-              setNovoBloqueio((a) => ({
-                ...a,
-                dataFim: e.target.value
-              }))
-            }
+            onChange={(e) => setNovoBloqueio({ ...novoBloqueio, dataFim: e.target.value })}
           />
-
           <label className="checkLine">
             <input
               type="checkbox"
               checked={novoBloqueio.diaTodo}
-              onChange={(e) =>
-                setNovoBloqueio((a) => ({
-                  ...a,
-                  diaTodo: e.target.checked
-                }))
-              }
+              onChange={(e) => setNovoBloqueio({ ...novoBloqueio, diaTodo: e.target.checked })}
             />
-            Bloquear dia inteiro
+            Bloquear os dias inteiros
           </label>
-
           {!novoBloqueio.diaTodo && (
             <>
-              <label className="formLabel">Horário específico</label>
+              <label className="formLabel">Bloquear apenas horário específico</label>
               <input
                 placeholder="Ex: 14:00"
                 value={novoBloqueio.horario}
-                onChange={(e) =>
-                  setNovoBloqueio((a) => ({
-                    ...a,
-                    horario: e.target.value
-                  }))
-                }
+                onChange={(e) => setNovoBloqueio({ ...novoBloqueio, horario: e.target.value })}
               />
             </>
           )}
-
-          <label className="formLabel">Motivo</label>
+          <label className="formLabel">Motivo Interno</label>
           <input
-            placeholder="Férias, feriado, compromisso..."
+            placeholder="Ex: Feriado Nacional, Viagem..."
             value={novoBloqueio.motivo}
-            onChange={(e) =>
-              setNovoBloqueio((a) => ({
-                ...a,
-                motivo: e.target.value
-              }))
-            }
+            onChange={(e) => setNovoBloqueio({ ...novoBloqueio, motivo: e.target.value })}
           />
-
-          <button type="button" onClick={criarBloqueio}>
-            Criar bloqueio
-          </button>
+          <button type="button" onClick={() => pedirConfirmacao("Confirmar criação deste bloqueio na agenda?", criarBloqueio)}>Aplicar Bloqueio</button>
         </div>
       </div>
 
-      <div className="bloqueiosList">
-        {bloqueios.map((b) => (
-          <div className="bloqueioItem" key={b.id}>
-            <div>
-              <strong>{b.motivo}</strong>
-              <span>
-                {b.dataInicio} até {b.dataFim || b.dataInicio}
-                {b.diaTodo ? " • dia inteiro" : ` • ${b.horario}`}
-              </span>
+      {bloqueios.length > 0 && (
+        <div className="bloqueiosList">
+          <h3 style={{ marginTop: "1rem" }}>Bloqueios Ativos</h3>
+          {bloqueios.map((b) => (
+            <div className="bloqueioItem" key={b.id}>
+              <div>
+                <strong>{b.motivo}</strong>
+                <span>
+                  {formatarDataBrasil(b.dataInicio)} até {formatarDataBrasil(b.dataFim || b.dataInicio)}
+                  {b.diaTodo ? " • Dia Inteiro" : ` • Das ${b.horario}h`}
+                </span>
+              </div>
+              <button className="dangerFullBtn" type="button" onClick={() => pedirConfirmacao("Deseja excluir este bloqueio e liberar a data?", () => removerBloqueio(b.id))}>Remover</button>
             </div>
-
-            <button type="button" onClick={() => removerBloqueio(b.id)}>
-              Remover
-            </button>
-          </div>
-        ))}
-      </div>
-
-      <h2 id="abertos" className="adminTitle">
-  Agendamentos em aberto
-</h2>
-
-      <div className="adminGrid">
-        {abertos.map((item) => (
-          <div className="adminCard orderCard" key={item.id}>
-            <div className={`status ${item.status}`}>
-              {item.status}
-            </div>
-
-            <strong>{item.clienteNome}</strong>
-            <span>{item.clienteTelefone}</span>
-
-            <p>{item.servicoNome}</p>
-            <p className="agendamentoData">
-              {`${formatarDataBrasil(item.data)} às ${item.horario}`}
-            </p>
-
-            <b>R$ {Number(item.valor).toFixed(2)}</b>
-
-            <div className="adminActions">
-              <button
-                type="button"
-                className="successBtn"
-                onClick={() => alterarStatus(item.id, "concluido")}
-              >
-                Concluir
-              </button>
-
-              <button
-                type="button"
-                className="cancelBtn"
-                onClick={() => alterarStatus(item.id, "cancelado")}
-              >
-                Cancelar
-              </button>
-
-              <button
-              type="button"
-              className="whatsappBtn"
-              onClick={() => chamarClienteWhatsApp(item)}
-              >
-              Chamar WhatsApp
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
-
-     {/* FINALIZADOS */}
-<div className="adminSection">
-
-  <button
-    className="groupToggle"
-    onClick={() =>
-      setGrupoFinalizadosAberto(
-        !grupoFinalizadosAberto
-      )
-    }
-  >
-    <div>
-      <h2 className="adminTitle">
-        Agendamentos finalizados
-      </h2>
-
-      <span className="groupCount">
-        {concluidos.length} itens
-      </span>
-    </div>
-
-    <span className="groupArrow">
-      {grupoFinalizadosAberto ? "−" : "+"}
-    </span>
-  </button>
-
-  {grupoFinalizadosAberto && (
-    <div className="adminGrid">
-      {concluidos.map((item) => (
-        <div
-          className="adminCard finished"
-          key={item.id}
-        >
-          <span className="statusBadge done">
-            CONCLUÍDO
-          </span>
-
-          <h3>{item.clienteNome}</h3>
-
-          <p>{item.clienteTelefone}</p>
-
-          <p>{item.servicoNome}</p>
-
-        <p className="agendamentoData">
-        {`${formatarDataBrasil(item.data)} às ${item.horario}`}
-       </p>
-
-          <strong>
-            R$ {Number(item.valor || 0).toFixed(2)}
-          </strong>
-
-          <button
-            className="deleteBtn"
-            onClick={() =>
-              excluirAgendamento(item.id)
-            }
-          >
-            Excluir
-          </button>
+          ))}
         </div>
-      ))}
-    </div>
-  )}
-</div>
+      )}
 
-{/* CANCELADOS */}
-<div className="adminSection">
-
-  <button
-    className="groupToggle"
-    onClick={() =>
-      setGrupoCanceladosAberto(
-        !grupoCanceladosAberto
-      )
-    }
-  >
-    <div>
-      <h2 className="adminTitle">
-        Agendamentos cancelados
-      </h2>
-
-      <span className="groupCount">
-        {cancelados.length} itens
-      </span>
-    </div>
-
-    <span className="groupArrow">
-      {grupoCanceladosAberto ? "−" : "+"}
-    </span>
-  </button>
-
-  {grupoCanceladosAberto && (
-    <div className="adminGrid">
-      {cancelados.map((item) => (
-        <div
-          className="adminCard cancelled"
-          key={item.id}
-        >
-          <span className="statusBadge cancel">
-            CANCELADO
-          </span>
-
-          <h3>{item.clienteNome}</h3>
-
-          <p>{item.clienteTelefone}</p>
-
-          <p>{item.servicoNome}</p>
-
-          
-           <p className="agendamentoData">
-           {`${formatarDataBrasil(item.data)} às ${item.horario}`}
-           </p>
-
-          <strong>
-            R$ {Number(item.valor || 0).toFixed(2)}
-          </strong>
-
-          <button
-            className="deleteBtn"
-            onClick={() =>
-              excluirAgendamento(item.id)
-            }
-          >
-            Excluir
-          </button>
-        </div>
-      ))}
-    </div>
-  )}
-</div>
-
-      <h2 id="servicosAdmin" className="adminTitle">
-  Criar novo serviço
-</h2>
-
+      {/* --- LISTAGEM E EDIÇÃO DE SERVIÇOS CADASTRADOS --- */}
+      <h2 id="servicosAdmin" className="adminTitle">Gerenciar Serviços</h2>
       <div className="servicesAdminGrid">
+        {/* Card para Novo Serviço */}
         <div className="serviceAdminCard premiumForm">
-          <div className="imagePreview">
-            {novoServico.imagemUrl ? (
-              <img src={novoServico.imagemUrl} alt="" />
-            ) : (
-              <span>Sem imagem</span>
-            )}
-          </div>
-
-          <label className="uploadBox">
-            Escolher imagem
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) =>
-                imagemParaBase64(e.target.files?.[0], (base64) =>
-                  alterarNovoServico("imagemUrl", base64)
-                )
-              }
-            />
-          </label>
-
-          <input
-            placeholder="Nome"
-            value={novoServico.nome}
-            onChange={(e) => alterarNovoServico("nome", e.target.value)}
-          />
-
-          <textarea
-            placeholder="Descrição"
-            value={novoServico.descricao}
-            onChange={(e) => alterarNovoServico("descricao", e.target.value)}
-          />
-
-          <input
-            type="number"
-            placeholder="Preço"
-            value={novoServico.preco}
-            onChange={(e) => alterarNovoServico("preco", e.target.value)}
-          />
-
-          <input
-            type="number"
-            placeholder="Preço promocional"
-            value={novoServico.precoPromocional}
-            onChange={(e) => alterarNovoServico("precoPromocional", e.target.value)}
-          />
-
-          <label className="checkLine">
-            <input
-              type="checkbox"
-              checked={novoServico.promocaoAtiva}
-              onChange={(e) => alterarNovoServico("promocaoAtiva", e.target.checked)}
-            />
-            Promoção ativa
-          </label>
-
-          <label className="checkLine">
-            <input
-              type="checkbox"
-              checked={novoServico.ativo}
-              onChange={(e) => alterarNovoServico("ativo", e.target.checked)}
-            />
-            Serviço ativo
-          </label>
-
-          <button type="button" onClick={criarServico}>
-            Criar serviço
-          </button>
+          <h3>Cadastrar Novo Serviço</h3>
+          <input placeholder="Nome do Serviço" value={novoServico.nome} onChange={(e) => setNovoServico({ ...novoServico, nome: e.target.value })} />
+          <textarea placeholder="Descrição" value={novoServico.descricao} onChange={(e) => setNovoServico({ ...novoServico, descricao: e.target.value })} />
+          <input type="number" placeholder="Preço Base" value={novoServico.preco} onChange={(e) => setNovoServico({ ...novoServico, preco: e.target.value })} />
+          <button type="button" onClick={() => pedirConfirmacao("Deseja criar este novo serviço?", criarServico)}>Adicionar Serviço</button>
         </div>
-      </div>
 
-      <h2 className="adminTitle">Serviços cadastrados</h2>
-
-      <div className="servicesAdminGrid">
+        {/* Mapeamento dos serviços existentes */}
         {servicos.map((servico, index) => (
           <div className="serviceAdminCard premiumForm" key={servico.id}>
             <div className="imagePreview">
-              {servico.imagemUrl ? (
-                <img src={servico.imagemUrl} alt="" />
-              ) : (
-                <span>Sem imagem</span>
-              )}
+              {servico.imagemUrl ? <img src={servico.imagemUrl} alt="Serviço" /> : <span>Sem imagem</span>}
             </div>
-
+            
             <label className="uploadBox">
-              Escolher imagem
+              Trocar imagem
               <input
                 type="file"
                 accept="image/*"
-                onChange={(e) =>
-                  imagemParaBase64(e.target.files?.[0], (base64) =>
-                    alterarServico(index, "imagemUrl", base64)
-                  )
-                }
+                onChange={(e) => imagemParaBase64(e.target.files?.[0], (base64) => alterarServico(index, "imagemUrl", base64))}
               />
             </label>
 
             <input
+              placeholder="Nome do Serviço"
               value={servico.nome}
               onChange={(e) => alterarServico(index, "nome", e.target.value)}
             />
-
+            
             <textarea
+              placeholder="Descrição"
               value={servico.descricao}
               onChange={(e) => alterarServico(index, "descricao", e.target.value)}
             />
 
-            <input
-              type="number"
-              value={servico.preco}
-              onChange={(e) => alterarServico(index, "preco", e.target.value)}
-            />
-
-            <input
-              type="number"
-              value={servico.precoPromocional}
-              onChange={(e) => alterarServico(index, "precoPromocional", e.target.value)}
-            />
+            <div style={{ display: "flex", gap: "10px" }}>
+              <input
+                type="number"
+                placeholder="Preço Base"
+                value={servico.preco}
+                onChange={(e) => alterarServico(index, "preco", e.target.value)}
+              />
+              <input
+                type="number"
+                placeholder="Preço Promo"
+                value={servico.precoPromocional}
+                onChange={(e) => alterarServico(index, "precoPromocional", e.target.value)}
+              />
+            </div>
 
             <label className="checkLine">
               <input
@@ -1783,7 +868,7 @@ Mal posso esperar para deixar suas unhas perfeitas! Nos vemos em breve? `
                 checked={servico.promocaoAtiva}
                 onChange={(e) => alterarServico(index, "promocaoAtiva", e.target.checked)}
               />
-              Promoção ativa
+              Ativar Preço Promocional
             </label>
 
             <label className="checkLine">
@@ -1792,66 +877,151 @@ Mal posso esperar para deixar suas unhas perfeitas! Nos vemos em breve? `
                 checked={servico.ativo}
                 onChange={(e) => alterarServico(index, "ativo", e.target.checked)}
               />
-              Serviço ativo
+              Exibir no site
             </label>
 
-           <div
-  style={{
-    display: "flex",
-    gap: 10,
-    marginTop: 12
-  }}
->
-
-  <button
-    type="button"
-    onClick={() =>
-      salvarServico(servico)
-    }
-    style={{
-      flex: 1,
-
-      border: "none",
-      height: 46,
-
-      borderRadius: 14,
-
-      background:
-        "linear-gradient(135deg,#ea1d2c,#ff4d5e)",
-
-      color: "#fff",
-
-      fontWeight: 800,
-      fontSize: 14,
-
-      cursor: "pointer",
-
-      boxShadow:
-        "0 10px 20px rgba(234,29,44,0.20)"
-    }}
-  >
-    Salvar
-  </button>
-
-  <button
-    type="button"
-    onClick={() =>
-      excluirServico(servico.id)
-    }
-    className="dangerFullBtn"
-    style={{
-      flex: 1,
-      height: 46,
-      borderRadius: 14
-    }}
-  >
-    Excluir
-  </button>
-
-</div>
+            <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+              <button 
+                type="button" 
+                onClick={() => pedirConfirmacao(`Salvar alterações em "${servico.nome}"?`, () => salvarServico(servico))} 
+                style={{ flex: 1 }}
+              >
+                Salvar
+              </button>
+              <button 
+                type="button" 
+                className="dangerFullBtn" 
+                onClick={() => pedirConfirmacao(`Tem certeza que deseja excluir "${servico.nome}"?`, () => excluirServico(servico.id))} 
+                style={{ flex: 1 }}
+              >
+                Excluir
+              </button>
+            </div>
           </div>
         ))}
       </div>
+
+      {/* --- AGENDAMENTOS EM ABERTO (SEPARADOS POR DIA COM SCROLL) --- */}
+      <h2 id="abertos" className="adminTitle">Agendamentos em Aberto</h2>
+      
+      {datasOrdenadas.length === 0 ? (
+        <p style={{ padding: "0 10px" }}>Nenhum agendamento pendente em aberto.</p>
+      ) : (
+        datasOrdenadas.map((dataChave) => {
+          const listaDoDia = abertosPorDia[dataChave];
+          const listaOrdenadaPorHorario = [...listaDoDia].sort((a, b) => String(a.horario).localeCompare(String(b.horario)));
+          const expandido = diasAbertosExpandidos[dataChave];
+          
+          return (
+            <div key={dataChave} className="adminDataGrupo" style={{ marginBottom: "1.5rem", background: "#fff", borderRadius: "10px", border: "1px solid #eaeaea", overflow: "hidden" }}>
+              
+              {/* CABEÇALHO DO DIA (CLICÁVEL PARA ABRIR/FECHAR) */}
+              <div 
+                onClick={() => alternarDiaAcordeon(dataChave)}
+                style={{
+                  display: "flex", justifyContent: "space-between", alignItems: "center",
+                  padding: "15px 20px", cursor: "pointer", background: expandido ? "#fcf6f0" : "#fff",
+                  borderBottom: expandido ? "1px solid #d4a373" : "none",
+                  transition: "all 0.3s ease"
+                }}
+              >
+                <h3 style={{ margin: 0, color: "#333", fontSize: "1.2rem" }}>
+                  📅 {formatarDataBrasil(dataChave)}
+                </h3>
+                <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+                  <span style={{ background: "linear-gradient(135deg, #d4a373, #faedcd)", color: "#333", padding: "4px 12px", borderRadius: "15px", fontSize: "0.85rem", fontWeight: "bold" }}>
+                    {listaDoDia.length} {listaDoDia.length === 1 ? "cliente" : "clientes"}
+                  </span>
+                  <span style={{ fontSize: "1.2rem", color: "#666" }}>{expandido ? "▲" : "▼"}</span>
+                </div>
+              </div>
+
+              {/* CORPO DO DIA (LIMITA A ALTURA PARA EVITAR TELA INFINITA) */}
+              {expandido && (
+                <div style={{ maxHeight: "500px", overflowY: "auto", padding: "20px", background: "#fafafa" }}>
+                  <div className="adminGrid">
+                    {listaOrdenadaPorHorario.map((item) => (
+                      <div className="adminCard orderCard" key={item.id}>
+                        <div className="cardHeader">
+                          <div className={`statusPill status-${item.status}`}>
+                            {item.status === 'agendado' ? 'Novo!' : 'Confirmado'}
+                          </div>
+                          <strong>{item.horario}</strong>
+                        </div>
+                        
+                        <div className="cardBody">
+                          <p><strong>Cliente:</strong> {item.clienteNome}</p>
+                          <p><strong>Tel:</strong> {item.clienteTelefone}</p>
+                          <p><strong>Serviço:</strong> {item.servicoNome}</p>
+                          <p><strong>Valor Estimado:</strong> R$ {Number(item.valor || 0).toFixed(2).replace(".", ",")}</p>
+                        </div>
+
+                        <div className="cardActions" style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "15px" }}>
+                          {/* Botão de WhatsApp não precisa de confirmação pois só redireciona de aba */}
+                          <button onClick={() => chamarClienteWhatsApp(item)} style={{ flex: "1 1 100%", background: "#25D366", color: "#fff" }}>
+                            📲 Enviar Confirmação
+                          </button>
+                          <button onClick={() => pedirConfirmacao("Deseja marcar este horário como Confirmado?", () => alterarStatus(item.id, "confirmado"))} style={{ flex: "1" }}>Confirmar</button>
+                          <button onClick={() => pedirConfirmacao("O atendimento já foi realizado? Deseja finalizar este agendamento?", () => alterarStatus(item.id, "concluido"))} style={{ flex: "1", background: "#4caf50", color: "#fff" }}>Finalizar</button>
+                          <button onClick={() => pedirConfirmacao("Atenção: Tem certeza que deseja CANCELAR este atendimento?", () => alterarStatus(item.id, "cancelado"))} className="dangerFullBtn" style={{ flex: "1" }}>Cancelar</button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })
+      )}
+
+      {/* --- AGENDAMENTOS CONCLUÍDOS (COM SCROLL) --- */}
+      <h2 id="concluidos" className="adminTitle" onClick={() => setGrupoFinalizadosAberto(!grupoFinalizadosAberto)} style={{ cursor: "pointer", display: "flex", justifyContent: "space-between", background: "#f5f5f5", padding: "15px", borderRadius: "8px" }}>
+        Concluídos ({concluidos.length}) {grupoFinalizadosAberto ? "▲" : "▼"}
+      </h2>
+      {grupoFinalizadosAberto && (
+        <div style={{ maxHeight: "400px", overflowY: "auto", padding: "10px", border: "1px solid #eee", borderRadius: "10px", background: "#fafafa", marginBottom: "2rem" }}>
+          <div className="adminGrid">
+            {concluidos.map((item) => (
+              <div className="adminCard orderCard" key={item.id} style={{ opacity: 0.8 }}>
+                <div className="cardHeader">
+                  <div className="statusPill status-concluido">Finalizado</div>
+                  <strong>{formatarDataBrasil(item.data)} - {item.horario}</strong>
+                </div>
+                <div className="cardBody">
+                  <p><strong>Cliente:</strong> {item.clienteNome}</p>
+                  <p><strong>Serviço:</strong> {item.servicoNome}</p>
+                  <p><strong>Valor:</strong> R$ {Number(item.valor || 0).toFixed(2).replace(".", ",")}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* --- AGENDAMENTOS CANCELADOS (COM SCROLL) --- */}
+      <h2 id="cancelados" className="adminTitle" onClick={() => setGrupoCanceladosAberto(!grupoCanceladosAberto)} style={{ cursor: "pointer", display: "flex", justifyContent: "space-between", background: "#f5f5f5", padding: "15px", borderRadius: "8px" }}>
+        Cancelados ({cancelados.length}) {grupoCanceladosAberto ? "▲" : "▼"}
+      </h2>
+      {grupoCanceladosAberto && (
+        <div style={{ maxHeight: "400px", overflowY: "auto", padding: "10px", border: "1px solid #eee", borderRadius: "10px", background: "#fafafa", marginBottom: "2rem" }}>
+          <div className="adminGrid">
+            {cancelados.map((item) => (
+              <div className="adminCard orderCard" key={item.id} style={{ opacity: 0.7, borderLeft: "4px solid #f44336" }}>
+                <div className="cardHeader">
+                  <div className="statusPill status-cancelado" style={{ background: "#fce4e4", color: "#f44336" }}>Cancelado</div>
+                  <strong>{formatarDataBrasil(item.data)} - {item.horario}</strong>
+                </div>
+                <div className="cardBody">
+                  <p><strong>Cliente:</strong> {item.clienteNome}</p>
+                  <p><strong>Serviço:</strong> {item.servicoNome}</p>
+                </div>
+                <button className="dangerFullBtn" onClick={() => pedirConfirmacao("EXCLUIR PERMANENTE: Isso apagará este registro do banco de dados de vez. Continuar?", () => excluirAgendamento(item.id))} style={{ width: "100%", marginTop: "10px" }}>Excluir Permanentemente</button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
