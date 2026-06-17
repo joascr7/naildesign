@@ -313,27 +313,25 @@ O que preciso fazer agora para validar a minha vaga? `
       className="modalOverlay"
       style={{
         position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        display: 'flex',
-        alignItems: 'flex-start', // A mágica acontece aqui: evita que o modal seja cortado no topo/base
-        justifyContent: 'center',
-        overflowY: 'auto', // Transfere o scroll para o fundo
+        top: 0, left: 0, right: 0, bottom: 0,
+        backgroundColor: 'rgba(0,0,0,0.6)',
+        overflowY: 'auto', // Garante a rolagem da tela inteira
         WebkitOverflowScrolling: 'touch',
-        padding: '20px 10px', // Dá um respiro para o modal não ficar colado nas bordas
-        zIndex: 9999
+        display: 'block', // Muda de flex para block, essencial para iPhone
+        padding: '20px 10px',
+        zIndex: 99999
       }}
     >
       <div 
         className="modalBox modalPremium" 
         style={{ 
-          margin: 'auto', // Centraliza quando for pequeno, mas deixa rolar quando for grande
-          height: 'max-content', 
+          margin: '0 auto', // Centraliza a caixinha
+          maxWidth: '500px',
           width: '100%',
-          maxWidth: '500px', // Evita que fique esticado em telas grandes
-          position: 'relative'
+          position: 'relative',
+          height: 'auto', // Permite crescer infinitamente
+          minHeight: 'min-content',
+          paddingBottom: '30px' // Garante um respiro no final da caixinha
         }}
       >
         <button className="closeModal" onClick={onFechar}>
@@ -449,8 +447,9 @@ O que preciso fazer agora para validar a minha vaga? `
           </div>
         )}
 
-        <div className="confirmArea" style={{ paddingBottom: '20px' }}>
-          <div className="confirmInfo">
+        {/* FORÇANDO A ÁREA DE CONFIRMAÇÃO A APARECER COM ESTILOS INLINE */}
+        <div className="confirmArea" style={{ display: 'block', position: 'relative', marginTop: '20px' }}>
+          <div className="confirmInfo" style={{ marginBottom: '15px' }}>
             Ao confirmar, você será redirecionada para o WhatsApp para finalizar o agendamento 💖
           </div>
 
@@ -458,7 +457,21 @@ O que preciso fazer agora para validar a minha vaga? `
             className="confirmBtn pulseBtn"
             onClick={confirmarAgendamento}
             disabled={loading || !configAgenda.agendaAberta}
-            style={{ marginTop: '15px', width: '100%', display: 'block' }} // Forçando o botão a aparecer
+            style={{ 
+              display: 'block', 
+              width: '100%', 
+              padding: '16px', 
+              backgroundColor: '#402e29', // Cor padrão de destaque da loja
+              color: '#fff', 
+              border: 'none', 
+              borderRadius: '12px',
+              fontSize: '18px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              position: 'static', // Isso impede que o CSS esconda o botão
+              visibility: 'visible',
+              opacity: 1
+            }}
           >
             {loading ? "Agendando..." : "Confirmar agendamento"}
           </button>
