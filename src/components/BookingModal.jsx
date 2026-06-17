@@ -312,16 +312,29 @@ O que preciso fazer agora para validar a minha vaga? `
   }, [horariosSemana]);
 
   return (
-    <div className="modalOverlay">
-      {/* NOVO ESTILO: Forçando altura dinâmica e rolagem fluida nativa */}
+    <div 
+      className="modalOverlay"
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        overflowY: 'auto', // A MÁGICA ACONTECE AQUI: Faz o fundo inteiro ter scroll
+        display: 'flex',
+        flexDirection: 'column',
+        padding: '20px 10px',
+        boxSizing: 'border-box',
+        zIndex: 9999,
+        WebkitOverflowScrolling: 'touch'
+      }}
+    >
       <div 
         className="modalBox modalPremium" 
         style={{ 
-          height: 'auto', 
-          maxHeight: '85vh', 
-          overflowY: 'auto', 
-          WebkitOverflowScrolling: 'touch',
-          paddingBottom: '25px'
+          margin: 'auto', // Centraliza na tela quando está pequeno
+          flexShrink: 0, // Garante que a caixa não seja "esmagada" quando crescer
+          position: 'relative' // Tira qualquer absolute que o CSS externo possa estar forçando
         }}
       >
         <button className="closeModal" onClick={onFechar}>
