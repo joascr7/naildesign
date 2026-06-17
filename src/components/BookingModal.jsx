@@ -313,7 +313,8 @@ O que preciso fazer agora para validar a minha vaga? `
 
   return (
     <div className="modalOverlay">
-      <div className="modalBox modalPremium">
+      {/* CORREÇÃO APLICADA AQUI: Adicionado style={{ maxHeight: '90vh', overflowY: 'auto' }} */}
+      <div className="modalBox modalPremium" style={{ maxHeight: '90vh', overflowY: 'auto' }}>
         <button className="closeModal" onClick={onFechar}>
           ×
         </button>
