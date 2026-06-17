@@ -309,149 +309,146 @@ O que preciso fazer agora para validar a minha vaga? `
   }, [horariosSemana]);
 
   return (
-    <div 
-      className="modalOverlay"
-      style={{
-        position: 'fixed',
-        top: 0, left: 0, right: 0, bottom: 0,
-        backgroundColor: 'rgba(0,0,0,0.6)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '20px', // Respiro para o modal não encostar na borda do celular
-        zIndex: 99999
-      }}
-    >
+    <div className="modalOverlay">
+      {/* 1. CAIXA PRINCIPAL: Com altura máxima limitada para não vazar da tela */}
       <div 
         className="modalBox modalPremium" 
         style={{ 
-          width: '100%',
-          maxWidth: '500px',
-          maxHeight: '85vh', // Força a caixa branca a nunca passar da altura do celular
-          overflowY: 'auto', // A MAGIA ESTÁ AQUI: Cria barra de rolagem DENTRO da caixinha branca
-          WebkitOverflowScrolling: 'touch', // Deixa a rolagem fluida no iPhone
-          display: 'block', // Evita que o CSS amasse os itens
-          paddingBottom: '20px',
-          position: 'relative',
-          backgroundColor: '#fff',
-          borderRadius: '16px'
+          display: 'flex', 
+          flexDirection: 'column', 
+          maxHeight: '90vh', 
+          overflow: 'hidden' 
         }}
       >
         <button className="closeModal" onClick={onFechar}>
           ×
         </button>
 
-        <span className="modalTag">Lays Eduarda</span>
+        {/* 2. CABEÇALHO FIXO: Nunca diminui de tamanho */}
+        <div style={{ flexShrink: 0 }}>
+          <span className="modalTag">Lays Eduarda</span>
+          <h2>Agendar horário</h2>
+        </div>
 
-        <h2>Agendar horário</h2>
+        {/* 3. CONTEÚDO ROLÁVEL: É aqui dentro que as datas vão "crescer" e criar a barra de rolagem */}
+        <div 
+          style={{ 
+            flex: 1, 
+            overflowY: 'auto', 
+            WebkitOverflowScrolling: 'touch', 
+            paddingRight: '5px', 
+            marginTop: '10px'
+          }}
+        >
+          <p className="modalService">
+            {servicoEscolhido?.nome || "Escolha um serviço"}
+          </p>
 
-        <p className="modalService">
-          {servicoEscolhido?.nome || "Escolha um serviço"}
-        </p>
+          {!configAgenda.agendaAberta && (
+            <div className="modalMessage">
+              {configAgenda.mensagemFechado}
+            </div>
+          )}
 
-        {!configAgenda.agendaAberta && (
-          <div className="modalMessage">
-            {configAgenda.mensagemFechado}
+          {!servicoSelecionado && (
+            <select
+              className="modalSelect"
+              value={servicoEscolhido?.id || ""}
+              onChange={(e) => {
+                const servico = servicos.find((s) => s.id === e.target.value);
+                setServicoEscolhido(servico || null);
+                setMensagem("");
+              }}
+            >
+              <option value="">Selecione um serviço</option>
+              {servicos.map((servico) => {
+                const temPromocao =
+                  servico.promocaoAtiva &&
+                  Number(servico.precoPromocional) > 0 &&
+                  Number(servico.precoPromocional) < Number(servico.preco);
+
+                const valor = temPromocao
+                  ? Number(servico.precoPromocional)
+                  : Number(servico.preco);
+
+                return (
+                  <option key={servico.id} value={servico.id}>
+                    {servico.nome} - R$ {valor.toFixed(2)}
+                  </option>
+                );
+              })}
+            </select>
+          )}
+
+          <input
+            placeholder="Seu nome"
+            value={nome}
+            onChange={(e) => setNome(e.target.value)}
+          />
+
+          <input
+            placeholder="WhatsApp"
+            value={telefone}
+            onChange={(e) => setTelefone(formatarTelefone(e.target.value))}
+          />
+
+          <div className="dateField">
+            <label className="modalFieldLabel">Escolha a data do atendimento</label>
+            <input
+              className="dateInput"
+              type="date"
+              min={configAgenda.dataInicioAgendamento || dataHoje()}
+              value={data}
+              onChange={(e) => buscarHorariosOcupados(e.target.value)}
+            />
           </div>
-        )}
 
-        {!servicoSelecionado && (
-          <select
-            className="modalSelect"
-            value={servicoEscolhido?.id || ""}
-            onChange={(e) => {
-              const servico = servicos.find((s) => s.id === e.target.value);
-              setServicoEscolhido(servico || null);
-              setMensagem("");
-            }}
-          >
-            <option value="">Selecione um serviço</option>
-            {servicos.map((servico) => {
-              const temPromocao =
-                servico.promocaoAtiva &&
-                Number(servico.precoPromocional) > 0 &&
-                Number(servico.precoPromocional) < Number(servico.preco);
-
-              const valor = temPromocao
-                ? Number(servico.precoPromocional)
-                : Number(servico.preco);
+          <div className="horariosGrid">
+            {horariosDisponiveis.map((h) => {
+              const ocupado = horariosOcupados.includes(h);
+              const bloqueado = horariosBloqueados.includes(h);
+              const indisponivel = ocupado || bloqueado || diaBloqueado || !configAgenda.agendaAberta;
+              const selecionado = horario === h;
 
               return (
-                <option key={servico.id} value={servico.id}>
-                  {servico.nome} - R$ {valor.toFixed(2)}
-                </option>
+                <button
+                  key={h}
+                  disabled={indisponivel}
+                  className={indisponivel ? "indisponivel" : selecionado ? "selecionado" : ""}
+                  onClick={() => setHorario(h)}
+                >
+                  {indisponivel ? "Indisponível" : h}
+                </button>
               );
             })}
-          </select>
-        )}
-
-        <input
-          placeholder="Seu nome"
-          value={nome}
-          onChange={(e) => setNome(e.target.value)}
-        />
-
-        <input
-          placeholder="WhatsApp"
-          value={telefone}
-          onChange={(e) => setTelefone(formatarTelefone(e.target.value))}
-        />
-
-        <div className="dateField">
-          <label className="modalFieldLabel">Escolha a data do atendimento</label>
-          <input
-            className="dateInput"
-            type="date"
-            min={configAgenda.dataInicioAgendamento || dataHoje()}
-            value={data}
-            onChange={(e) => buscarHorariosOcupados(e.target.value)}
-          />
-        </div>
-
-        <div className="horariosGrid">
-          {horariosDisponiveis.map((h) => {
-            const ocupado = horariosOcupados.includes(h);
-            const bloqueado = horariosBloqueados.includes(h);
-            const indisponivel = ocupado || bloqueado || diaBloqueado || !configAgenda.agendaAberta;
-            const selecionado = horario === h;
-
-            return (
-              <button
-                key={h}
-                disabled={indisponivel}
-                className={indisponivel ? "indisponivel" : selecionado ? "selecionado" : ""}
-                onClick={() => setHorario(h)}
-              >
-                {indisponivel ? "Indisponível" : h}
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="paymentField" style={{ marginTop: '15px' }}>
-          <label className="modalFieldLabel" style={{ display: 'block', marginBottom: '8px' }}>
-            Forma de pagamento
-          </label>
-          <select
-            className="modalSelect"
-            value={formaPagamento}
-            onChange={(e) => setFormaPagamento(e.target.value)}
-          >
-            <option value="Pix">Pix</option>
-            <option value="Cartão de Crédito">Cartão de Crédito</option>
-            <option value="Cartão de Débito">Cartão de Débito</option>
-            <option value="Dinheiro">Dinheiro</option>
-          </select>
-        </div>
-
-        {mensagem && (
-          <div className={mensagem.includes("sucesso") ? "modalMessage success" : "modalMessage error"}>
-            {mensagem}
           </div>
-        )}
 
-        <div className="confirmArea" style={{ marginTop: '20px', flexShrink: 0 }}>
-          <div className="confirmInfo" style={{ marginBottom: '15px' }}>
+          <div className="paymentField" style={{ marginTop: '15px' }}>
+            <label className="modalFieldLabel" style={{ display: 'block', marginBottom: '8px' }}>
+              Forma de pagamento
+            </label>
+            <select
+              className="modalSelect"
+              value={formaPagamento}
+              onChange={(e) => setFormaPagamento(e.target.value)}
+            >
+              <option value="Pix">Pix</option>
+              <option value="Cartão de Crédito">Cartão de Crédito</option>
+              <option value="Cartão de Débito">Cartão de Débito</option>
+              <option value="Dinheiro">Dinheiro</option>
+            </select>
+          </div>
+
+          {mensagem && (
+            <div className={mensagem.includes("sucesso") ? "modalMessage success" : "modalMessage error"}>
+              {mensagem}
+            </div>
+          )}
+        </div>
+
+        {/* 4. RODAPÉ FIXO: Fica "ancorado" no final e nunca some! */}
+        <div className="confirmArea" style={{ flexShrink: 0, marginTop: '15px' }}>
+          <div className="confirmInfo">
             Ao confirmar, você será redirecionada para o WhatsApp para finalizar o agendamento 💖
           </div>
 
