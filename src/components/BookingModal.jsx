@@ -313,8 +313,17 @@ O que preciso fazer agora para validar a minha vaga? `
 
   return (
     <div className="modalOverlay">
-      {/* CORREÇÃO APLICADA AQUI: Adicionado style={{ maxHeight: '90vh', overflowY: 'auto' }} */}
-      <div className="modalBox modalPremium" style={{ maxHeight: '90vh', overflowY: 'auto' }}>
+      {/* NOVO ESTILO: Forçando altura dinâmica e rolagem fluida nativa */}
+      <div 
+        className="modalBox modalPremium" 
+        style={{ 
+          height: 'auto', 
+          maxHeight: '85vh', 
+          overflowY: 'auto', 
+          WebkitOverflowScrolling: 'touch',
+          paddingBottom: '25px'
+        }}
+      >
         <button className="closeModal" onClick={onFechar}>
           ×
         </button>
