@@ -25,7 +25,6 @@ export default function BookingModal({
   const [data, setData] = useState("");
   const [horario, setHorario] = useState("");
   
-  // NOVO: Estado para armazenar a forma de pagamento
   const [formaPagamento, setFormaPagamento] = useState("Pix");
 
   const [loading, setLoading] = useState(false);
@@ -224,7 +223,6 @@ export default function BookingModal({
     try {
       setLoading(true);
 
-      // NOVO: Salvando a forma de pagamento no Firebase também
       await addDoc(collection(db, "agendamentos"), {
         clienteNome: nome,
         clienteTelefone: telefone,
@@ -233,7 +231,7 @@ export default function BookingModal({
         valor: precoFinal(),
         data,
         horario,
-        formaPagamento, // Registra o pagamento no banco
+        formaPagamento,
         status: "agendado",
         criadoEm: new Date()
       });
@@ -243,7 +241,6 @@ export default function BookingModal({
       const dataBrasil = data.split("-").reverse().join("/");
       const valorFormatado = precoFinal().toFixed(2).replace(".", ",");
 
-      // NOVO: Adicionado o campo "Pagamento" na mensagem do WhatsApp
       const texto = encodeURIComponent(
 `Olá, Lays! 
 
@@ -318,23 +315,25 @@ O que preciso fazer agora para validar a minha vaga? `
         position: 'fixed',
         top: 0,
         left: 0,
-        width: '100%',
-        height: '100%',
-        overflowY: 'auto', // A MÁGICA ACONTECE AQUI: Faz o fundo inteiro ter scroll
+        right: 0,
+        bottom: 0,
         display: 'flex',
-        flexDirection: 'column',
-        padding: '20px 10px',
-        boxSizing: 'border-box',
-        zIndex: 9999,
-        WebkitOverflowScrolling: 'touch'
+        alignItems: 'flex-start', // A mágica acontece aqui: evita que o modal seja cortado no topo/base
+        justifyContent: 'center',
+        overflowY: 'auto', // Transfere o scroll para o fundo
+        WebkitOverflowScrolling: 'touch',
+        padding: '20px 10px', // Dá um respiro para o modal não ficar colado nas bordas
+        zIndex: 9999
       }}
     >
       <div 
         className="modalBox modalPremium" 
         style={{ 
-          margin: 'auto', // Centraliza na tela quando está pequeno
-          flexShrink: 0, // Garante que a caixa não seja "esmagada" quando crescer
-          position: 'relative' // Tira qualquer absolute que o CSS externo possa estar forçando
+          margin: 'auto', // Centraliza quando for pequeno, mas deixa rolar quando for grande
+          height: 'max-content', 
+          width: '100%',
+          maxWidth: '500px', // Evita que fique esticado em telas grandes
+          position: 'relative'
         }}
       >
         <button className="closeModal" onClick={onFechar}>
@@ -428,7 +427,6 @@ O que preciso fazer agora para validar a minha vaga? `
           })}
         </div>
 
-        {/* NOVO: Campo para selecionar a forma de pagamento */}
         <div className="paymentField" style={{ marginTop: '15px' }}>
           <label className="modalFieldLabel" style={{ display: 'block', marginBottom: '8px' }}>
             Forma de pagamento
@@ -451,7 +449,7 @@ O que preciso fazer agora para validar a minha vaga? `
           </div>
         )}
 
-        <div className="confirmArea">
+        <div className="confirmArea" style={{ paddingBottom: '20px' }}>
           <div className="confirmInfo">
             Ao confirmar, você será redirecionada para o WhatsApp para finalizar o agendamento 💖
           </div>
@@ -460,6 +458,7 @@ O que preciso fazer agora para validar a minha vaga? `
             className="confirmBtn pulseBtn"
             onClick={confirmarAgendamento}
             disabled={loading || !configAgenda.agendaAberta}
+            style={{ marginTop: '15px', width: '100%', display: 'block' }} // Forçando o botão a aparecer
           >
             {loading ? "Agendando..." : "Confirmar agendamento"}
           </button>
